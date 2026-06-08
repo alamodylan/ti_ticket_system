@@ -1,0 +1,164 @@
+{% extends "layouts/dashboard_base.html" %}
+
+{% block page_title %}
+Actividad del Sistema
+{% endblock %}
+
+{% block dashboard_content %}
+
+<div class="card shadow-sm border-0 rounded-4">
+
+    <div
+        class="card-header bg-white border-0 d-flex justify-content-between align-items-center"
+    >
+
+        <h5 class="mb-0">
+            Actividad Reciente
+        </h5>
+
+        <button class="btn btn-outline-dark btn-sm">
+
+            <i class="bi bi-arrow-clockwise"></i>
+            Actualizar
+
+        </button>
+
+    </div>
+
+    <div class="card-body">
+
+        <div class="timeline">
+
+            <!-- ITEM -->
+            <div class="timeline-item mb-4">
+
+                <div class="d-flex">
+
+                    <div class="me-3">
+
+                        <span
+                            class="badge bg-primary rounded-circle p-3"
+                        >
+
+                            <i class="bi bi-ticket-detailed"></i>
+
+                        </span>
+
+                    </div>
+
+                    <div>
+
+                        <h6 class="mb-1">
+                            Nuevo ticket creado
+                        </h6>
+
+                        <p class="text-muted mb-1">
+
+                            Ticket TK-2026-0001 creado
+                            por Juan Pérez.
+
+                        </p>
+
+                        <small class="text-secondary">
+
+                            Hace 5 minutos
+
+                        </small>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- ITEM -->
+            <div class="timeline-item mb-4">
+
+                <div class="d-flex">
+
+                    <div class="me-3">
+
+                        <span
+                            class="badge bg-success rounded-circle p-3"
+                        >
+
+                            <i class="bi bi-check-circle"></i>
+
+                        </span>
+
+                    </div>
+
+                    <div>
+
+                        <h6 class="mb-1">
+                            Ticket resuelto
+                        </h6>
+
+                        <p class="text-muted mb-1">
+
+                            Ticket TK-2026-0002 fue
+                            cerrado correctamente.
+
+                        </p>
+
+                        <small class="text-secondary">
+
+                            Hace 20 minutos
+
+                        </small>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- ITEM -->
+            <div class="timeline-item">
+
+                <div class="d-flex">
+
+                    <div class="me-3">
+
+                        <span
+                            class="badge bg-warning rounded-circle p-3"
+                        >
+
+                            <i class="bi bi-person-plus"></i>
+
+                        </span>
+
+                    </div>
+
+                    <div>
+
+                        <h6 class="mb-1">
+                            Nuevo usuario registrado
+                        </h6>
+
+                        <p class="text-muted mb-1">
+
+                            Se registró un nuevo técnico
+                            en el sistema.
+
+                        </p>
+
+                        <small class="text-secondary">
+
+                            Hace 1 hora
+
+                        </small>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

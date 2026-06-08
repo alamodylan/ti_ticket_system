@@ -1,0 +1,64 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}
+    Authentication | TI Ticket System
+{% endblock %}
+
+{% block content %}
+
+<div class="auth-container">
+
+    <div class="container-fluid">
+
+        <div class="row min-vh-100">
+
+            <!-- ========================= -->
+            <!-- LEFT SIDE -->
+            <!-- ========================= -->
+            <div
+                class="col-lg-6 d-none d-lg-flex align-items-center justify-content-center bg-dark text-white"
+            >
+
+                <div class="text-center px-5">
+
+                    <h1 class="display-4 fw-bold mb-4">
+                        TI Ticket System
+                    </h1>
+
+                    <p class="lead text-light">
+
+                        Plataforma profesional para
+                        gestión de incidencias,
+                        soporte técnico y tickets TI.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+            <!-- ========================= -->
+            <!-- RIGHT SIDE -->
+            <!-- ========================= -->
+            <div
+                class="col-lg-6 d-flex align-items-center justify-content-center"
+            >
+
+                <div
+                    class="card shadow-lg border-0 rounded-4 p-4 auth-card"
+                >
+
+                    {% block auth_content %}
+                    {% endblock %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

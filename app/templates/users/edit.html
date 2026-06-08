@@ -1,0 +1,257 @@
+{% extends "layouts/dashboard_base.html" %}
+
+{% block title %}
+Editar Usuario
+{% endblock %}
+
+{% block dashboard_content %}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+
+            <h2 class="fw-bold mb-1">
+                Editar Usuario
+            </h2>
+
+            <p class="text-muted mb-0">
+                Actualizar información de {{ user.full_name }}
+            </p>
+
+        </div>
+
+        <a
+            href="{{ url_for('users.user_list') }}"
+            class="btn btn-outline-dark rounded-3"
+        >
+            Volver
+        </a>
+
+    </div>
+
+    <div class="card shadow-sm border-0 rounded-4">
+
+        <div class="card-body">
+
+            <form method="POST">
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label fw-semibold">
+                            Nombre
+                        </label>
+
+                        <input
+                            type="text"
+                            name="first_name"
+                            class="form-control rounded-3"
+                            value="{{ user.first_name }}"
+                            required
+                        >
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label fw-semibold">
+                            Apellido
+                        </label>
+
+                        <input
+                            type="text"
+                            name="last_name"
+                            class="form-control rounded-3"
+                            value="{{ user.last_name }}"
+                            required
+                        >
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label fw-semibold">
+                            Username
+                        </label>
+
+                        <input
+                            type="text"
+                            name="username"
+                            class="form-control rounded-3"
+                            value="{{ user.username }}"
+                            required
+                        >
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label fw-semibold">
+                            Correo
+                        </label>
+
+                        <input
+                            type="email"
+                            name="email"
+                            class="form-control rounded-3"
+                            value="{{ user.email }}"
+                            required
+                        >
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label fw-semibold">
+                            Teléfono
+                        </label>
+
+                        <input
+                            type="text"
+                            name="phone"
+                            class="form-control rounded-3"
+                            value="{{ user.phone or '' }}"
+                            placeholder="Opcional"
+                        >
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label fw-semibold">
+                            Nueva contraseña
+                        </label>
+
+                        <input
+                            type="password"
+                            name="password"
+                            class="form-control rounded-3"
+                            placeholder="Dejar vacío para no cambiar"
+                        >
+
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+
+                        <label class="form-label fw-semibold">
+                            Rol
+                        </label>
+
+                        <select
+                            name="role_id"
+                            class="form-select rounded-3"
+                            required
+                        >
+
+                            {% for role in roles %}
+
+                            <option
+                                value="{{ role.id }}"
+                                {% if user.role_id == role.id %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ role.name }}
+                            </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+
+                        <label class="form-label fw-semibold">
+                            Sede
+                        </label>
+
+                        <select
+                            name="site_id"
+                            class="form-select rounded-3"
+                            required
+                        >
+
+                            {% for site in sites %}
+
+                            <option
+                                value="{{ site.id }}"
+                                {% if user.site_id == site.id %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ site.name }}
+                            </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+
+                        <label class="form-label fw-semibold">
+                            Departamento
+                        </label>
+
+                        <select
+                            name="department_id"
+                            class="form-select rounded-3"
+                        >
+
+                            <option value="">
+                                Sin departamento
+                            </option>
+
+                            {% for department in departments %}
+
+                            <option
+                                value="{{ department.id }}"
+                                {% if user.department_id == department.id %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ department.name }}
+                            </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+                <hr>
+
+                <div class="d-flex justify-content-end gap-2">
+
+                    <a
+                        href="{{ url_for('users.user_list') }}"
+                        class="btn btn-outline-secondary rounded-3"
+                    >
+                        Cancelar
+                    </a>
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary rounded-3"
+                    >
+                        Guardar Cambios
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,156 @@
+{% extends "layouts/dashboard_base.html" %}
+
+{% block title %}
+Departamentos
+{% endblock %}
+
+{% block dashboard_content %}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h2 class="fw-bold mb-1">
+                Departamentos
+            </h2>
+
+            <p class="text-muted mb-0">
+                Total registrados:
+                <strong>{{ departments|length }}</strong>
+            </p>
+        </div>
+
+        <a
+            href="{{ url_for('departments.create_department') }}"
+            class="btn btn-primary rounded-3"
+        >
+            <i class="bi bi-plus-lg me-1"></i>
+            Nuevo Departamento
+        </a>
+
+    </div>
+
+    <div class="card shadow-sm border-0 rounded-4">
+
+        <div class="card-body p-0">
+
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle mb-0">
+
+                    <thead class="table-light">
+
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Descripción</th>
+                            <th>Usuarios</th>
+                            <th>Tickets</th>
+                            <th>Estado</th>
+                            <th class="text-center">Acciones</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for department in departments %}
+
+                        <tr>
+
+                            <td>
+                                <strong>{{ department.name }}</strong>
+                            </td>
+
+                            <td>
+                                {{ department.description or '-' }}
+                            </td>
+
+                            <td>
+                                {{ department.users_count }}
+                            </td>
+
+                            <td>
+                                {{ department.tickets_count }}
+                            </td>
+
+                            <td>
+                                {% if department.is_active %}
+                                    <span class="badge bg-success">
+                                        Activo
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-danger">
+                                        Inactivo
+                                    </span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+
+                                <div class="d-flex justify-content-center gap-2">
+
+                                    <a
+                                        href="{{ url_for('departments.edit_department', department_id=department.id) }}"
+                                        class="btn btn-sm btn-outline-primary"
+                                        title="Editar departamento"
+                                    >
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+
+                                    {% if department.is_active %}
+
+                                    <form
+                                        method="POST"
+                                        action="{{ url_for('departments.deactivate_department', department_id=department.id) }}"
+                                        onsubmit="return confirm('¿Deseas desactivar este departamento?');"
+                                        class="d-inline"
+                                    >
+
+                                        <button
+                                            type="submit"
+                                            class="btn btn-sm btn-outline-danger"
+                                            title="Desactivar departamento"
+                                        >
+                                            <i class="bi bi-x-circle"></i>
+                                        </button>
+
+                                    </form>
+
+                                    {% endif %}
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                        {% else %}
+
+                        <tr>
+                            <td
+                                colspan="6"
+                                class="text-center py-5"
+                            >
+                                <div class="text-muted">
+                                    <i class="bi bi-building fs-1 d-block mb-3"></i>
+                                    <h5>No hay departamentos registrados</h5>
+                                </div>
+                            </td>
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

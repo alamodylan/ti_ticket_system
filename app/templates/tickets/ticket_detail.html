@@ -1,0 +1,657 @@
+{% extends "layouts/dashboard_base.html" %}
+
+{% block page_title %}
+Detalle del Ticket
+{% endblock %}
+
+{% block dashboard_content %}
+
+<div class="row g-4">
+
+    <div class="col-lg-8">
+
+        <div class="card shadow-sm border-0 rounded-4 mb-4">
+
+            <div class="card-header bg-white border-0">
+
+                <div class="d-flex justify-content-between align-items-start">
+
+                    <div>
+                        <h4 class="mb-1 fw-bold">
+                            {{ ticket.ticket_number }}
+                        </h4>
+
+                        <p class="text-muted mb-0">
+                            {{ ticket.title }}
+                        </p>
+                    </div>
+
+                    <div class="text-end">
+
+                        <span class="badge {{ ticket.status_badge_class }} rounded-pill px-3 py-2 mb-2">
+                            {{ ticket.status }}
+                        </span>
+
+                        {% if current_user.is_admin and ticket.status != "Cerrado" %}
+
+                        <br>
+
+                        <a
+                            href="{{ url_for('tickets.edit_ticket', ticket_id=ticket.id) }}"
+                            class="btn btn-sm btn-outline-dark mt-2"
+                        >
+                            Editar
+                        </a>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="card-body">
+
+                <h6 class="fw-bold">
+                    Descripción
+                </h6>
+
+                <p class="text-muted mb-0">
+                    {{ ticket.description }}
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="card shadow-sm border-0 rounded-4 mb-4">
+
+            <div class="card-header bg-white border-0">
+
+                <h5 class="mb-0 fw-bold">
+                    Adjuntos
+                </h5>
+
+            </div>
+
+            <div class="card-body">
+
+                {% if attachments %}
+
+                    {% for attachment in attachments %}
+
+                    <div class="border rounded-4 p-3 mb-3">
+
+                        <div class="d-flex justify-content-between align-items-center">
+
+                            <div>
+
+                                <strong>
+                                    {{ attachment.original_name }}
+                                </strong>
+
+                                <div class="text-muted small">
+                                    {{ attachment.size_label }}
+                                    |
+                                    Subido por {{ attachment.uploader_name }}
+                                </div>
+
+                            </div>
+
+                            <a
+                                href="{{ url_for('static', filename='uploads/tickets/' ~ attachment.file_name) }}"
+                                target="_blank"
+                                class="btn btn-sm btn-outline-dark"
+                            >
+                                Ver
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                    {% endfor %}
+
+                {% else %}
+
+                    <div class="text-center py-4 text-muted">
+
+                        <i class="bi bi-paperclip fs-1 d-block mb-3"></i>
+
+                        <h6>
+                            No hay adjuntos todavía
+                        </h6>
+
+                    </div>
+
+                {% endif %}
+
+                {% if ticket.status != "Cerrado" %}
+
+                <form
+                    method="POST"
+                    enctype="multipart/form-data"
+                    class="mt-3"
+                >
+
+                    <input
+                        type="hidden"
+                        name="action"
+                        value="attachment"
+                    >
+
+                    <div class="mb-3">
+
+                        <label class="form-label fw-semibold">
+                            Agregar archivo
+                        </label>
+
+                        <input
+                            type="file"
+                            name="attachment"
+                            class="form-control rounded-3"
+                            required
+                        >
+
+                        <small class="text-muted">
+                            Permitidos: png, jpg, jpeg, pdf, doc, docx, xls, xlsx, txt. Máximo 5 MB.
+                        </small>
+
+                    </div>
+
+                    <button
+                        type="submit"
+                        class="btn btn-outline-dark rounded-3"
+                    >
+                        <i class="bi bi-paperclip me-1"></i>
+                        Subir Adjunto
+                    </button>
+
+                </form>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+        <div class="card shadow-sm border-0 rounded-4 mb-4">
+
+            <div class="card-header bg-white border-0">
+
+                <h5 class="mb-0 fw-bold">
+                    Comentarios
+                </h5>
+
+            </div>
+
+            <div class="card-body">
+
+                {% for comment in comments %}
+
+                <div class="border rounded-4 p-3 mb-3">
+
+                    <div class="d-flex justify-content-between align-items-start">
+
+                        <div>
+                            <strong>
+                                {{ comment.author_name }}
+                            </strong>
+
+                            <span class="badge {{ comment.type_badge_class }} ms-2">
+                                {{ comment.type_label }}
+                            </span>
+                        </div>
+
+                        <small class="text-muted">
+                            {{ comment.created_at.strftime('%Y-%m-%d %H:%M') }}
+                        </small>
+
+                    </div>
+
+                    <p class="mt-3 mb-0">
+                        {{ comment.comment }}
+                    </p>
+
+                </div>
+
+                {% else %}
+
+                <div class="text-center py-4 text-muted">
+
+                    <i class="bi bi-chat-dots fs-1 d-block mb-3"></i>
+
+                    <h6>
+                        No hay comentarios todavía
+                    </h6>
+
+                </div>
+
+                {% endfor %}
+
+                {% if ticket.status != "Cerrado" %}
+
+                <form method="POST">
+
+                    <input
+                        type="hidden"
+                        name="action"
+                        value="comment"
+                    >
+
+                    {% if current_user.is_admin %}
+
+                    <div class="mb-3">
+
+                        <label class="form-label fw-semibold">
+                            Tipo de comentario
+                        </label>
+
+                        <select
+                            name="comment_type"
+                            class="form-select rounded-3"
+                        >
+                            <option value="technical">
+                                Responsable IT
+                            </option>
+
+                            <option value="user">
+                                Usuario
+                            </option>
+
+                            <option value="internal">
+                                Interno
+                            </option>
+                        </select>
+
+                        <small class="text-muted">
+                            Los comentarios internos solo son visibles para administradores.
+                        </small>
+
+                    </div>
+
+                    {% else %}
+
+                    <input
+                        type="hidden"
+                        name="comment_type"
+                        value="user"
+                    >
+
+                    {% endif %}
+
+                    <div class="mb-3">
+
+                        <textarea
+                            name="comment"
+                            rows="4"
+                            class="form-control rounded-4"
+                            placeholder="Agregar comentario..."
+                            required
+                        ></textarea>
+
+                    </div>
+
+                    <button
+                        type="submit"
+                        class="btn btn-dark rounded-3"
+                    >
+                        <i class="bi bi-chat-left-text me-1"></i>
+                        Comentar
+                    </button>
+
+                </form>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+        <div class="card shadow-sm border-0 rounded-4">
+
+            <div class="card-header bg-white border-0">
+
+                <h5 class="mb-0 fw-bold">
+                    Historial
+                </h5>
+
+            </div>
+
+            <div class="card-body">
+
+                {% if audit_logs %}
+
+                    {% for log in audit_logs %}
+
+                    <div class="border-start border-3 ps-3 mb-3">
+
+                        <div class="d-flex justify-content-between align-items-center">
+
+                            <strong>
+                                {{ log.action_label }}
+                            </strong>
+
+                            <small class="text-muted">
+                                {% if log.created_at %}
+                                    {{ log.created_at.strftime('%Y-%m-%d %H:%M') }}
+                                {% else %}
+                                    N/A
+                                {% endif %}
+                            </small>
+
+                        </div>
+
+                        <p class="text-muted mb-1">
+                            {{ log.short_details }}
+                        </p>
+
+                        <small class="text-muted">
+                            Por: {{ log.actor_name }}
+                        </small>
+
+                    </div>
+
+                    {% endfor %}
+
+                {% else %}
+
+                    <div class="text-center py-4 text-muted">
+
+                        <i class="bi bi-clock-history fs-1 d-block mb-3"></i>
+
+                        <h6>
+                            No hay historial disponible
+                        </h6>
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-lg-4">
+
+        {% if current_user.is_admin %}
+
+        <div class="card shadow-sm border-0 rounded-4 mb-4">
+
+            <div class="card-header bg-white border-0">
+
+                <h5 class="mb-0 fw-bold">
+                    Gestión del Ticket
+                </h5>
+
+            </div>
+
+            <div class="card-body">
+
+                {% if ticket.status == "Cerrado" %}
+
+                    <div class="alert alert-secondary rounded-4 mb-0">
+                        Este ticket está cerrado y no permite nuevas acciones.
+                    </div>
+
+                {% else %}
+
+                    <form method="POST" class="mb-3">
+
+                        <input
+                            type="hidden"
+                            name="action"
+                            value="take_ticket"
+                        >
+
+                        <button
+                            type="submit"
+                            class="btn btn-dark w-100 rounded-3"
+                        >
+                            <i class="bi bi-person-check me-1"></i>
+                            Tomar Ticket
+                        </button>
+
+                    </form>
+
+                    <form method="POST" class="mb-3">
+
+                        <input
+                            type="hidden"
+                            name="action"
+                            value="assign_ticket"
+                        >
+
+                        <label class="form-label fw-semibold">
+                            Asignar a
+                        </label>
+
+                        <select
+                            name="assigned_to_id"
+                            class="form-select rounded-3 mb-2"
+                            required
+                        >
+                            <option value="">
+                                Seleccionar técnico
+                            </option>
+
+                            {% for admin in admin_users %}
+
+                            <option
+                                value="{{ admin.id }}"
+                                {% if ticket.assigned_to_id == admin.id %}selected{% endif %}
+                            >
+                                {{ admin.full_name }} - {{ admin.site_name }}
+                            </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                        <button
+                            type="submit"
+                            class="btn btn-outline-dark w-100 rounded-3"
+                        >
+                            <i class="bi bi-person-plus me-1"></i>
+                            Asignar Ticket
+                        </button>
+
+                    </form>
+
+                    <hr>
+
+                    <div class="d-grid gap-2">
+
+                        {% if ticket.status != "En Progreso" %}
+
+                        <form method="POST">
+
+                            <input
+                                type="hidden"
+                                name="action"
+                                value="mark_in_progress"
+                            >
+
+                            <button
+                                type="submit"
+                                class="btn btn-outline-primary w-100 rounded-3"
+                            >
+                                Marcar En Progreso
+                            </button>
+
+                        </form>
+
+                        {% endif %}
+
+                        {% if ticket.status != "Pendiente" %}
+
+                        <form method="POST">
+
+                            <input
+                                type="hidden"
+                                name="action"
+                                value="mark_pending"
+                            >
+
+                            <button
+                                type="submit"
+                                class="btn btn-outline-secondary w-100 rounded-3"
+                            >
+                                Marcar Pendiente
+                            </button>
+
+                        </form>
+
+                        {% endif %}
+
+                        {% if ticket.status != "Resuelto" %}
+
+                        <form method="POST">
+
+                            <input
+                                type="hidden"
+                                name="action"
+                                value="resolve_ticket"
+                            >
+
+                            <button
+                                type="submit"
+                                class="btn btn-outline-success w-100 rounded-3"
+                            >
+                                Marcar Resuelto
+                            </button>
+
+                        </form>
+
+                        {% endif %}
+
+                        <form method="POST">
+
+                            <input
+                                type="hidden"
+                                name="action"
+                                value="close_ticket"
+                            >
+
+                            <button
+                                type="submit"
+                                class="btn btn-outline-danger w-100 rounded-3"
+                                onclick="return confirm('¿Seguro que desea cerrar este ticket?')"
+                            >
+                                Cerrar Ticket
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+        {% endif %}
+
+        <div class="card shadow-sm border-0 rounded-4 mb-4">
+
+            <div class="card-header bg-white border-0">
+
+                <h5 class="mb-0 fw-bold">
+                    Información
+                </h5>
+
+            </div>
+
+            <div class="card-body">
+
+                <ul class="list-group list-group-flush">
+
+                    <li class="list-group-item">
+                        <strong>Prioridad:</strong>
+                        <span class="badge {{ ticket.priority_badge_class }}">
+                            {{ ticket.priority }}
+                        </span>
+                    </li>
+
+                    <li class="list-group-item">
+                        <strong>Sede:</strong>
+                        {{ ticket.site_name }}
+                    </li>
+
+                    <li class="list-group-item">
+                        <strong>Categoría:</strong>
+                        {{ ticket.category.name if ticket.category else 'Sin categoría' }}
+                    </li>
+
+                    <li class="list-group-item">
+                        <strong>Departamento:</strong>
+                        {{ ticket.department.name if ticket.department else 'Sin departamento' }}
+                    </li>
+
+                    <li class="list-group-item">
+                        <strong>Creado por:</strong>
+                        {{ ticket.created_by.full_name if ticket.created_by else 'Usuario eliminado' }}
+                    </li>
+
+                    <li class="list-group-item">
+                        <strong>Asignado a:</strong>
+
+                        {% if ticket.assigned_to %}
+                            {{ ticket.assigned_to.full_name }}
+                        {% else %}
+                            Sin asignar
+                        {% endif %}
+                    </li>
+
+                    <li class="list-group-item">
+                        <strong>Comentarios:</strong>
+                        {{ ticket.comments_count }}
+                    </li>
+
+                    <li class="list-group-item">
+                        <strong>Adjuntos:</strong>
+                        {{ ticket.attachments_count }}
+                    </li>
+
+                    <li class="list-group-item">
+                        <strong>Creado:</strong>
+
+                        {% if ticket.created_at %}
+                            {{ ticket.created_at.strftime('%Y-%m-%d %H:%M') }}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </li>
+
+                    <li class="list-group-item">
+                        <strong>Actualizado:</strong>
+
+                        {% if ticket.updated_at %}
+                            {{ ticket.updated_at.strftime('%Y-%m-%d %H:%M') }}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </li>
+
+                </ul>
+
+            </div>
+
+        </div>
+
+        <a
+            href="{{ url_for('tickets.ticket_list') }}"
+            class="btn btn-outline-secondary w-100 rounded-3"
+        >
+            Volver a Tickets
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

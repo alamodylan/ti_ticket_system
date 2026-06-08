@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>
+        Ticket Asignado
+    </title>
+
+</head>
+
+<body
+    style="
+        margin:0;
+        padding:0;
+        background:#f4f7fb;
+        font-family:Arial,sans-serif;
+    "
+>
+
+    <table
+        width="100%"
+        cellpadding="0"
+        cellspacing="0"
+        style="padding:40px 0;"
+    >
+
+        <tr>
+
+            <td align="center">
+
+                <table
+                    width="650"
+                    cellpadding="0"
+                    cellspacing="0"
+                    style="
+                        background:#ffffff;
+                        border-radius:12px;
+                        overflow:hidden;
+                    "
+                >
+
+                    <tr>
+
+                        <td
+                            style="
+                                background:#059669;
+                                color:#ffffff;
+                                padding:30px;
+                                text-align:center;
+                            "
+                        >
+
+                            <h1 style="margin:0;">
+                                Ticket Asignado
+                            </h1>
+
+                        </td>
+
+                    </tr>
+
+                    <tr>
+
+                        <td style="padding:40px;">
+
+                            <p style="color:#4b5563;">
+
+                                Se le ha asignado un nuevo
+                                ticket para atención.
+
+                            </p>
+
+                            <table
+                                width="100%"
+                                cellpadding="10"
+                                cellspacing="0"
+                                style="
+                                    border:1px solid #e5e7eb;
+                                    border-radius:10px;
+                                "
+                            >
+
+                                <tr>
+
+                                    <td>
+                                        <strong>Ticket:</strong>
+                                    </td>
+
+                                    <td>
+                                        {{ ticket.ticket_number }}
+                                    </td>
+
+                                </tr>
+
+                                <tr>
+
+                                    <td>
+                                        <strong>Título:</strong>
+                                    </td>
+
+                                    <td>
+                                        {{ ticket.title }}
+                                    </td>
+
+                                </tr>
+
+                                <tr>
+
+                                    <td>
+                                        <strong>Prioridad:</strong>
+                                    </td>
+
+                                    <td>
+                                        {{ ticket.priority }}
+                                    </td>
+
+                                </tr>
+
+                            </table>
+
+                            <div
+                                style="
+                                    margin-top:30px;
+                                    text-align:center;
+                                "
+                            >
+
+                                <a
+                                    href="{{ ticket_url }}"
+                                    style="
+                                        background:#059669;
+                                        color:#ffffff;
+                                        text-decoration:none;
+                                        padding:14px 28px;
+                                        border-radius:8px;
+                                        display:inline-block;
+                                    "
+                                >
+
+                                    Abrir Ticket
+
+                                </a>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    <tr>
+
+                        <td
+                            style="
+                                background:#f9fafb;
+                                padding:20px;
+                                text-align:center;
+                                color:#6b7280;
+                                font-size:14px;
+                            "
+                        >
+
+                            Sistema de Tickets TI
+
+                        </td>
+
+                    </tr>
+
+                </table>
+
+            </td>
+
+        </tr>
+
+    </table>
+
+</body>
+
+</html>

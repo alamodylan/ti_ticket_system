@@ -1,0 +1,104 @@
+{% extends "layouts/dashboard_base.html" %}
+
+{% block page_title %}
+Categorías
+{% endblock %}
+
+{% block dashboard_content %}
+
+<div class="card shadow-sm border-0 rounded-4">
+
+    <div
+        class="card-header bg-white border-0 d-flex justify-content-between align-items-center"
+    >
+
+        <h4 class="mb-0">
+            Categorías de Tickets
+        </h4>
+
+        <button class="btn btn-dark">
+
+            <i class="bi bi-plus-lg"></i>
+            Nueva Categoría
+
+        </button>
+
+    </div>
+
+    <div class="card-body">
+
+        <div class="row g-4">
+
+            {% for category in categories %}
+
+            <div class="col-md-4">
+
+                <div
+                    class="card border-0 shadow-sm rounded-4 h-100"
+                >
+
+                    <div class="card-body">
+
+                        <div
+                            class="d-flex justify-content-between align-items-start mb-3"
+                        >
+
+                            <div>
+
+                                <h5 class="fw-bold">
+
+                                    {{ category.name }}
+
+                                </h5>
+
+                            </div>
+
+                            <i
+                                class="bi bi-tags fs-3 text-primary"
+                            ></i>
+
+                        </div>
+
+                        <p class="text-muted">
+
+                            {{ category.description }}
+
+                        </p>
+
+                    </div>
+
+                    <div
+                        class="card-footer bg-white border-0 d-flex justify-content-end gap-2"
+                    >
+
+                        <button
+                            class="btn btn-sm btn-outline-primary"
+                        >
+
+                            <i class="bi bi-pencil"></i>
+
+                        </button>
+
+                        <button
+                            class="btn btn-sm btn-outline-danger"
+                        >
+
+                            <i class="bi bi-trash"></i>
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

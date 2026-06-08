@@ -1,0 +1,95 @@
+{% extends "layouts/dashboard_base.html" %}
+
+{% block title %}
+Crear Departamento
+{% endblock %}
+
+{% block dashboard_content %}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h2 class="fw-bold mb-1">
+                Crear Departamento
+            </h2>
+
+            <p class="text-muted mb-0">
+                Registrar nuevo departamento del sistema
+            </p>
+        </div>
+
+        <a
+            href="{{ url_for('departments.department_list') }}"
+            class="btn btn-outline-dark rounded-3"
+        >
+            Volver
+        </a>
+
+    </div>
+
+    <div class="card shadow-sm border-0 rounded-4">
+
+        <div class="card-body">
+
+            <form method="POST">
+
+                <div class="mb-3">
+
+                    <label class="form-label fw-semibold">
+                        Nombre
+                    </label>
+
+                    <input
+                        type="text"
+                        name="name"
+                        class="form-control rounded-3"
+                        required
+                    >
+
+                </div>
+
+                <div class="mb-3">
+
+                    <label class="form-label fw-semibold">
+                        Descripción
+                    </label>
+
+                    <textarea
+                        name="description"
+                        rows="4"
+                        class="form-control rounded-3"
+                    ></textarea>
+
+                </div>
+
+                <hr>
+
+                <div class="d-flex justify-content-end gap-2">
+
+                    <a
+                        href="{{ url_for('departments.department_list') }}"
+                        class="btn btn-outline-secondary rounded-3"
+                    >
+                        Cancelar
+                    </a>
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary rounded-3"
+                    >
+                        Crear Departamento
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

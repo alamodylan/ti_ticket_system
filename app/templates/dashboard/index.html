@@ -1,0 +1,395 @@
+{% extends "layouts/dashboard_base.html" %}
+
+{% block title %}
+Dashboard
+{% endblock %}
+
+{% block dashboard_content %}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+
+            <h1 class="h3 fw-bold mb-1">
+                Panel Principal
+            </h1>
+
+            <p class="text-muted mb-0">
+                Bienvenido
+                <strong>{{ current_user.full_name }}</strong>
+                | Predio:
+                <strong>{{ current_user.site_name }}</strong>
+            </p>
+
+        </div>
+
+        <a
+            href="{{ url_for('tickets.create_ticket') }}"
+            class="btn btn-primary"
+        >
+            <i class="fas fa-plus"></i>
+            Nuevo Ticket
+        </a>
+
+    </div>
+
+    {% if is_admin %}
+
+    <div class="row g-4 mb-4">
+
+        <div class="col-md-4">
+
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+                        Total Tickets
+                    </h6>
+
+                    <h2 class="fw-bold mb-0">
+                        {{ total_tickets }}
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+                        Usuarios
+                    </h6>
+
+                    <h2 class="fw-bold mb-0">
+                        {{ total_users }}
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+                        Departamentos
+                    </h6>
+
+                    <h2 class="fw-bold mb-0">
+                        {{ total_departments }}
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+                        Tickets Abiertos
+                    </h6>
+
+                    <h2 class="fw-bold mb-0">
+                        {{ open_tickets }}
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+                        Tickets Cerrados
+                    </h6>
+
+                    <h2 class="fw-bold mb-0">
+                        {{ closed_tickets }}
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+                        Tickets Críticos
+                    </h6>
+
+                    <h2 class="fw-bold mb-0">
+                        {{ critical_tickets }}
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    {% else %}
+
+    <div class="row g-4 mb-4">
+
+        <div class="col-md-4">
+
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+                        Mis Tickets
+                    </h6>
+
+                    <h2 class="fw-bold mb-0">
+                        {{ my_total_tickets }}
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+                        Pendientes
+                    </h6>
+
+                    <h2 class="fw-bold mb-0">
+                        {{ my_pending_tickets }}
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+                        Resueltos
+                    </h6>
+
+                    <h2 class="fw-bold mb-0">
+                        {{ my_resolved_tickets }}
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-body">
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+
+                <h5 class="fw-bold mb-0">
+                    Tickets Recientes
+                </h5>
+
+                <a
+                    href="{{ url_for('tickets.ticket_list') }}"
+                    class="btn btn-sm btn-outline-primary"
+                >
+                    Ver Todos
+                </a>
+
+            </div>
+
+            {% if recent_tickets %}
+
+            <div class="table-responsive">
+
+                <table class="table align-middle">
+
+                    <thead>
+
+                        <tr>
+                            <th>#</th>
+                            <th>Título</th>
+                            <th>Estado</th>
+                            <th>Prioridad</th>
+                            <th>Predio</th>
+                            <th></th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for ticket in recent_tickets %}
+
+                        <tr>
+
+                            <td>
+                                {{ ticket.ticket_number }}
+                            </td>
+
+                            <td>
+                                {{ ticket.title }}
+                            </td>
+
+                            <td>
+                                <span class="badge {{ ticket.status_badge_class }}">
+                                    {{ ticket.status }}
+                                </span>
+                            </td>
+
+                            <td>
+                                <span class="badge {{ ticket.priority_badge_class }}">
+                                    {{ ticket.priority }}
+                                </span>
+                            </td>
+
+                            <td>
+                                {{ ticket.site_name }}
+                            </td>
+
+                            <td>
+                                <a
+                                    href="{{ url_for('tickets.ticket_detail', ticket_id=ticket.id) }}"
+                                    class="btn btn-sm btn-outline-dark"
+                                >
+                                    Ver
+                                </a>
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            {% else %}
+
+            <div class="alert alert-light border mb-0">
+                No hay tickets recientes.
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+    <div class="row g-4">
+
+        <div class="col-md-6">
+
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-body">
+
+                    <h5 class="mb-3 fw-bold">
+                        Gestión de Tickets
+                    </h5>
+
+                    <p class="text-muted">
+                        Crear, visualizar y dar seguimiento a tickets del sistema.
+                    </p>
+
+                    <a
+                        href="{{ url_for('tickets.ticket_list') }}"
+                        class="btn btn-outline-primary"
+                    >
+                        Ver Tickets
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% if is_admin %}
+
+        <div class="col-md-6">
+
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-body">
+
+                    <h5 class="mb-3 fw-bold">
+                        Administración
+                    </h5>
+
+                    <p class="text-muted">
+                        Gestionar usuarios, permisos y accesos del sistema.
+                    </p>
+
+                    <a
+                        href="{{ url_for('users.user_list') }}"
+                        class="btn btn-outline-dark"
+                    >
+                        Administrar Usuarios
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}

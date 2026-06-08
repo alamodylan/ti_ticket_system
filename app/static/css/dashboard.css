@@ -1,0 +1,201 @@
+@import url("variables.css");
+
+/* =========================
+   DASHBOARD LAYOUT
+========================= */
+
+.dashboard-wrapper {
+
+    display: flex;
+    min-height: 100vh;
+
+}
+
+/* =========================
+   SIDEBAR
+========================= */
+
+.sidebar {
+
+    width: 270px;
+    background: var(--color-primary);
+    color: white;
+
+    padding: 1.5rem;
+
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+
+    overflow-y: auto;
+
+}
+
+.sidebar-brand {
+
+    margin-bottom: 2rem;
+
+}
+
+.sidebar-brand h3 {
+
+    font-weight: 700;
+
+}
+
+.sidebar-menu {
+
+    list-style: none;
+    padding: 0;
+
+}
+
+.sidebar-menu li {
+
+    margin-bottom: 0.5rem;
+
+}
+
+.sidebar-menu a {
+
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    color: #cbd5e1;
+
+    padding:
+        0.9rem 1rem;
+
+    border-radius:
+        var(--radius-md);
+
+    transition:
+        var(--transition);
+
+}
+
+.sidebar-menu a:hover {
+
+    background:
+        rgba(255,255,255,0.08);
+
+    color: white;
+
+}
+
+.sidebar-menu i {
+
+    font-size: 1.1rem;
+
+}
+
+/* =========================
+   MAIN CONTENT
+========================= */
+
+.main-content {
+
+    flex: 1;
+    margin-left: 270px;
+
+    background:
+        var(--color-light);
+
+}
+
+/* =========================
+   TOPBAR
+========================= */
+
+.topbar {
+
+    background: white;
+
+    padding:
+        1rem 2rem;
+
+    border-bottom:
+        1px solid
+        var(--color-border);
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    position: sticky;
+    top: 0;
+    z-index: 100;
+
+}
+
+/* =========================
+   CONTENT
+========================= */
+
+.content-area {
+
+    padding: 2rem;
+
+}
+
+/* =========================
+   STAT CARDS
+========================= */
+
+.stat-card {
+
+    background: white;
+    border-radius: var(--radius-lg);
+
+    padding: 1.5rem;
+
+    box-shadow: var(--shadow-sm);
+
+}
+
+/* =========================
+   TIMELINE
+========================= */
+
+.timeline {
+
+    position: relative;
+
+}
+
+.timeline-item {
+
+    position: relative;
+
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 992px) {
+
+    .sidebar {
+
+        width: 100%;
+        height: auto;
+
+        position: relative;
+
+    }
+
+    .main-content {
+
+        margin-left: 0;
+
+    }
+
+    .dashboard-wrapper {
+
+        flex-direction: column;
+
+    }
+
+}

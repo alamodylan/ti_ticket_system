@@ -1,0 +1,193 @@
+{% extends "layouts/dashboard_base.html" %}
+
+{% block page_title %}
+Estadísticas
+{% endblock %}
+
+{% block dashboard_content %}
+
+<div class="row g-4">
+
+    <!-- ========================= -->
+    <!-- TICKET STATUS -->
+    <!-- ========================= -->
+    <div class="col-lg-6">
+
+        <div class="card shadow-sm border-0 rounded-4 h-100">
+
+            <div class="card-header bg-white border-0">
+
+                <h5 class="mb-0">
+                    Estado de Tickets
+                </h5>
+
+            </div>
+
+            <div class="card-body">
+
+                <canvas id="ticketStatusChart"></canvas>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ========================= -->
+    <!-- PRIORITY -->
+    <!-- ========================= -->
+    <div class="col-lg-6">
+
+        <div class="card shadow-sm border-0 rounded-4 h-100">
+
+            <div class="card-header bg-white border-0">
+
+                <h5 class="mb-0">
+                    Prioridades
+                </h5>
+
+            </div>
+
+            <div class="card-body">
+
+                <canvas id="priorityChart"></canvas>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="row g-4 mt-1">
+
+    <!-- ========================= -->
+    <!-- USERS -->
+    <!-- ========================= -->
+    <div class="col-lg-12">
+
+        <div class="card shadow-sm border-0 rounded-4">
+
+            <div class="card-header bg-white border-0">
+
+                <h5 class="mb-0">
+                    Rendimiento de Técnicos
+                </h5>
+
+            </div>
+
+            <div class="card-body">
+
+                <table class="table align-middle">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Técnico</th>
+                            <th>Tickets Asignados</th>
+                            <th>Resueltos</th>
+                            <th>Abiertos</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>Juan Pérez</td>
+                            <td>25</td>
+                            <td>18</td>
+                            <td>7</td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>María Gómez</td>
+                            <td>19</td>
+                            <td>15</td>
+                            <td>4</td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+const statusCtx = document
+    .getElementById('ticketStatusChart');
+
+new Chart(statusCtx, {
+
+    type: 'doughnut',
+
+    data: {
+
+        labels: [
+            'Nuevo',
+            'En Proceso',
+            'Pendiente',
+            'Cerrado'
+        ],
+
+        datasets: [{
+
+            data: [12, 9, 5, 18]
+
+        }]
+
+    }
+
+});
+
+const priorityCtx = document
+    .getElementById('priorityChart');
+
+new Chart(priorityCtx, {
+
+    type: 'bar',
+
+    data: {
+
+        labels: [
+            'Baja',
+            'Media',
+            'Alta',
+            'Crítica'
+        ],
+
+        datasets: [{
+
+            label: 'Tickets',
+
+            data: [5, 15, 10, 3]
+
+        }]
+
+    }
+
+});
+
+</script>
+
+{% endblock %}

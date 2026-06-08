@@ -1,0 +1,255 @@
+{% extends "layouts/dashboard_base.html" %}
+
+{% block page_title %}
+Crear Ticket
+{% endblock %}
+
+{% block dashboard_content %}
+
+<div class="row justify-content-center">
+
+    <div class="col-lg-10">
+
+        <!-- HEADER -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+
+            <div>
+
+                <h2 class="fw-bold mb-1">
+                    Crear Ticket
+                </h2>
+
+                <p class="text-muted mb-0">
+
+                    {% if current_user.site %}
+                        Predio:
+                        <strong>
+                            {{ current_user.site.name }}
+                        </strong>
+                    {% else %}
+                        Sin predio asignado
+                    {% endif %}
+
+                </p>
+
+            </div>
+
+            <a
+                href="{{ url_for('tickets.ticket_list') }}"
+                class="btn btn-outline-secondary rounded-3"
+            >
+
+                <i class="bi bi-arrow-left"></i>
+                Volver
+
+            </a>
+
+        </div>
+
+        <div class="card shadow-sm border-0 rounded-4">
+
+            <div class="card-header bg-white border-0 py-3">
+
+                <h4 class="mb-0 fw-bold">
+                    Nuevo Ticket
+                </h4>
+
+            </div>
+
+            <div class="card-body">
+
+                <form method="POST" enctype="multipart/form-data">
+
+                    <div class="row">
+
+                        <!-- TITLE -->
+                        <div class="col-md-12 mb-3">
+
+                            <label class="form-label fw-semibold">
+                                Título
+                            </label>
+
+                            <input
+                                type="text"
+                                name="title"
+                                class="form-control rounded-3"
+                                placeholder="Problema con acceso VPN..."
+                                required
+                            >
+
+                        </div>
+
+                        <!-- DESCRIPTION -->
+                        <div class="col-md-12 mb-3">
+
+                            <label class="form-label fw-semibold">
+                                Descripción
+                            </label>
+
+                            <textarea
+                                name="description"
+                                rows="6"
+                                class="form-control rounded-3"
+                                placeholder="Describa el problema..."
+                                required
+                            ></textarea>
+
+                        </div>
+
+                        <!-- PRIORITY -->
+                        <div class="col-md-4 mb-3">
+
+                            <label class="form-label fw-semibold">
+                                Prioridad
+                            </label>
+
+                            <select
+                                name="priority"
+                                class="form-select rounded-3"
+                            >
+
+                                <option value="Baja">
+                                    Baja
+                                </option>
+
+                                <option value="Media" selected>
+                                    Media
+                                </option>
+
+                                <option value="Alta">
+                                    Alta
+                                </option>
+
+                                <option value="Crítica">
+                                    Crítica
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                        <!-- CATEGORY -->
+                        <div class="col-md-4 mb-3">
+
+                            <label class="form-label fw-semibold">
+                                Categoría
+                            </label>
+
+                            <select
+                                name="category_id"
+                                class="form-select rounded-3"
+                                required
+                            >
+
+                                {% for category in categories %}
+
+                                <option value="{{ category.id }}">
+
+                                    {{ category.name }}
+
+                                </option>
+
+                                {% endfor %}
+
+                            </select>
+
+                        </div>
+
+                        <!-- DEPARTMENT -->
+                        <div class="col-md-4 mb-3">
+
+                            <label class="form-label fw-semibold">
+                                Departamento
+                            </label>
+
+                            <select
+                                name="department_id"
+                                class="form-select rounded-3"
+                                required
+                            >
+
+                                {% for department in departments %}
+
+                                <option value="{{ department.id }}">
+
+                                    {{ department.name }}
+
+                                </option>
+
+                                {% endfor %}
+
+                            </select>
+
+                        </div>
+
+                        <!-- SITE -->
+                        <div class="col-md-12 mb-3">
+
+                            <label class="form-label fw-semibold">
+                                Predio asignado
+                            </label>
+
+                            <input
+                                type="text"
+                                class="form-control rounded-3 bg-light"
+                                value="{% if current_user.site %}{{ current_user.site.name }}{% else %}Sin predio asignado{% endif %}"
+                                disabled
+                            >
+
+                        </div>
+
+                        <!-- FILE -->
+                        <div class="col-md-12 mb-4">
+
+                            <label class="form-label fw-semibold">
+                                Adjuntar Archivo
+                            </label>
+
+                            <input
+                                type="file"
+                                name="attachment"
+                                class="form-control rounded-3"
+                            >
+
+                            <small class="text-muted">
+                                Puede adjuntar imágenes, PDF o documentos relacionados al incidente.
+                            </small>
+
+                        </div>
+
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+
+                        <a
+                            href="{{ url_for('tickets.ticket_list') }}"
+                            class="btn btn-outline-secondary rounded-3"
+                        >
+
+                            Cancelar
+
+                        </a>
+
+                        <button
+                            type="submit"
+                            class="btn btn-dark rounded-3"
+                        >
+
+                            <i class="bi bi-send"></i>
+                            Crear Ticket
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

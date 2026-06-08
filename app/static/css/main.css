@@ -1,0 +1,203 @@
+@import url("variables.css");
+
+/* =========================
+   GLOBAL
+========================= */
+
+* {
+
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+
+}
+
+body {
+
+    font-family: var(--font-family-base);
+    background: var(--color-light);
+    color: var(--color-secondary);
+
+    min-height: 100vh;
+
+}
+
+/* =========================
+   LINKS
+========================= */
+
+a {
+
+    text-decoration: none;
+    transition: var(--transition);
+
+}
+
+a:hover {
+
+    opacity: 0.9;
+
+}
+
+/* =========================
+   BUTTONS
+========================= */
+
+.btn {
+
+    border-radius: var(--radius-md);
+    transition: var(--transition);
+    font-weight: 500;
+
+}
+
+.btn-dark {
+
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+
+}
+
+.btn-dark:hover {
+
+    background: var(--color-secondary);
+    border-color: var(--color-secondary);
+
+}
+
+/* =========================
+   CARDS
+========================= */
+
+.card {
+
+    border-radius: var(--radius-lg);
+    border: none;
+    box-shadow: var(--shadow-sm);
+
+}
+
+.card-header {
+
+    border-bottom: 1px solid
+        var(--color-border);
+
+}
+
+/* =========================
+   FORM CONTROLS
+========================= */
+
+.form-control,
+.form-select {
+
+    border-radius: var(--radius-md);
+    border: 1px solid
+        var(--color-border);
+
+    padding: 0.75rem 1rem;
+
+}
+
+.form-control:focus,
+.form-select:focus {
+
+    box-shadow:
+        0 0 0 0.2rem
+        rgba(37, 99, 235, 0.15);
+
+    border-color:
+        var(--color-accent);
+
+}
+
+/* =========================
+   TABLES
+========================= */
+
+.table {
+
+    vertical-align: middle;
+
+}
+
+.table thead {
+
+    background: #f1f5f9;
+
+}
+
+.table th {
+
+    font-weight: 600;
+    color: var(--color-secondary);
+
+}
+
+/* =========================
+   BADGES
+========================= */
+
+.badge {
+
+    padding:
+        0.5rem 0.75rem;
+
+    border-radius:
+        999px;
+
+    font-weight: 500;
+
+}
+
+/* =========================
+   AUTH
+========================= */
+
+.auth-container {
+
+    background:
+        linear-gradient(
+            135deg,
+            #0f172a,
+            #1e293b
+        );
+
+}
+
+.auth-card {
+
+    width: 100%;
+    max-width: 500px;
+    border-radius: var(--radius-xl);
+
+}
+
+/* =========================
+   SCROLLBAR
+========================= */
+
+::-webkit-scrollbar {
+
+    width: 10px;
+
+}
+
+::-webkit-scrollbar-track {
+
+    background: #f1f5f9;
+
+}
+
+::-webkit-scrollbar-thumb {
+
+    background: #cbd5e1;
+    border-radius: 10px;
+
+}
+
+::-webkit-scrollbar-thumb:hover {
+
+    background: #94a3b8;
+
+}

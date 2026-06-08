@@ -1,0 +1,113 @@
+{% extends "layouts/dashboard_base.html" %}
+
+{% block page_title %}
+Permisos
+{% endblock %}
+
+{% block dashboard_content %}
+
+<div class="card shadow-sm border-0 rounded-4">
+
+    <div
+        class="card-header bg-white border-0 d-flex justify-content-between align-items-center"
+    >
+
+        <h4 class="mb-0">
+            Gestión de Permisos
+        </h4>
+
+        <button class="btn btn-dark">
+
+            <i class="bi bi-plus-lg"></i>
+            Nuevo Permiso
+
+        </button>
+
+    </div>
+
+    <div class="card-body">
+
+        <div class="table-responsive">
+
+            <table class="table align-middle">
+
+                <thead class="table-light">
+
+                    <tr>
+
+                        <th>Nombre</th>
+                        <th>Código</th>
+                        <th>Descripción</th>
+                        <th>Acciones</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for permission in permissions %}
+
+                    <tr>
+
+                        <td>
+
+                            {{ permission.name }}
+
+                        </td>
+
+                        <td>
+
+                            <code>
+
+                                {{ permission.code }}
+
+                            </code>
+
+                        </td>
+
+                        <td>
+
+                            {{ permission.description }}
+
+                        </td>
+
+                        <td>
+
+                            <div class="d-flex gap-2">
+
+                                <button
+                                    class="btn btn-sm btn-outline-primary"
+                                >
+
+                                    <i class="bi bi-pencil"></i>
+
+                                </button>
+
+                                <button
+                                    class="btn btn-sm btn-outline-danger"
+                                >
+
+                                    <i class="bi bi-trash"></i>
+
+                                </button>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,211 @@
+{% extends "layouts/base.html" %}
+
+{% block content %}
+
+<div class="dashboard-layout">
+
+    <aside class="sidebar">
+
+        <div class="sidebar-top">
+
+            <div class="logo-section mb-4">
+                <h2>TI SYSTEM</h2>
+                <p>Sistema de Tickets</p>
+            </div>
+
+            <div class="mb-4">
+
+                <div class="small text-muted fw-bold mb-2">
+                    PREDIO ACTIVO
+                </div>
+
+                {% if current_user.is_admin %}
+
+                <form
+                    method="POST"
+                    action="{{ url_for('sites.select_site') }}"
+                >
+
+                    <input
+                        type="hidden"
+                        name="next"
+                        value="{{ request.full_path }}"
+                    >
+
+                    <select
+                        name="site_id"
+                        class="form-select form-select-sm rounded-3"
+                        onchange="this.form.submit()"
+                    >
+
+                        <option
+                            value=""
+                            {% if not selected_site %}
+                                selected
+                            {% endif %}
+                        >
+                            Global
+                        </option>
+
+                        {% for site in admin_sites %}
+
+                        <option
+                            value="{{ site.id }}"
+                            {% if selected_site and selected_site.id == site.id %}
+                                selected
+                            {% endif %}
+                        >
+                            {{ site.name }}
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </form>
+
+                {% else %}
+
+                <div class="form-control form-control-sm rounded-3 bg-light">
+                    {{ current_user.site_name }}
+                </div>
+
+                {% endif %}
+
+            </div>
+
+            <div class="user-info-card mb-4">
+
+                <div class="fw-bold">
+                    {{ current_user.full_name }}
+                </div>
+
+                <div class="small text-muted">
+                    Usuario: {{ current_user.username }}
+                </div>
+
+                <div class="small text-muted">
+                    Rol: {{ current_user.role_name }}
+                </div>
+
+                <div class="small text-muted">
+                    Alcance:
+                    <strong>
+                        {% if current_user.is_admin %}
+                            {% if selected_site %}
+                                {{ selected_site.name }}
+                            {% else %}
+                                Global
+                            {% endif %}
+                        {% else %}
+                            {{ current_user.site_name }}
+                        {% endif %}
+                    </strong>
+                </div>
+
+            </div>
+
+            <nav class="sidebar-menu">
+
+                <a
+                    href="{{ url_for('dashboard.index') }}"
+                    class="sidebar-link"
+                >
+                    <i class="fa-solid fa-table-columns"></i>
+                    <span>Dashboard</span>
+                </a>
+
+                <a
+                    href="{{ url_for('tickets.ticket_list') }}"
+                    class="sidebar-link"
+                >
+                    <i class="fa-solid fa-ticket"></i>
+                    <span>Tickets</span>
+                </a>
+
+                <a
+                    href="{{ url_for('tickets.create_ticket') }}"
+                    class="sidebar-link"
+                >
+                    <i class="fa-solid fa-plus"></i>
+                    <span>Crear Ticket</span>
+                </a>
+
+                {% if current_user.is_admin %}
+
+                <hr>
+
+                <div class="sidebar-section-title">
+                    Administración
+                </div>
+
+                <a
+                    href="{{ url_for('users.user_list') }}"
+                    class="sidebar-link"
+                >
+                    <i class="fa-solid fa-users"></i>
+                    <span>Usuarios</span>
+                </a>
+
+                <a
+                    href="{{ url_for('departments.department_list') }}"
+                    class="sidebar-link"
+                >
+                    <i class="fa-solid fa-building"></i>
+                    <span>Departamentos</span>
+                </a>
+
+                {% endif %}
+
+            </nav>
+
+        </div>
+
+        <div class="sidebar-bottom">
+
+            <button
+                onclick="history.back()"
+                class="sidebar-link border-0 bg-transparent w-100 text-start"
+            >
+                <i class="fa-solid fa-arrow-left"></i>
+                <span>Regresar</span>
+            </button>
+
+            <a
+                href="{{ url_for('auth.logout') }}"
+                class="sidebar-link logout-link"
+            >
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span>Cerrar Sesión</span>
+            </a>
+
+        </div>
+
+    </aside>
+
+    <main class="dashboard-main">
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+
+            {% if messages %}
+
+                {% for category, message in messages %}
+
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+
+                {% endfor %}
+
+            {% endif %}
+
+        {% endwith %}
+
+        {% block dashboard_content %}
+        {% endblock %}
+
+    </main>
+
+</div>
+
+{% endblock %}

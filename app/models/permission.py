@@ -1,5 +1,6 @@
 from app.extensions import db
 from app.database import BaseModel
+from app.models.role import role_permissions
 
 
 class Permission(BaseModel):
@@ -32,7 +33,7 @@ class Permission(BaseModel):
     # =========================
     roles = db.relationship(
         "Role",
-        secondary="role_permissions",
+        secondary=role_permissions,
         back_populates="permissions",
         lazy="dynamic"
     )

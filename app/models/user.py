@@ -61,20 +61,20 @@ class User(UserMixin, BaseModel):
 
     role_id = db.Column(
         db.Integer,
-        db.ForeignKey("roles.id"),
+        db.ForeignKey("tickets_ti.roles.id"),
         nullable=False,
         index=True
     )
 
     department_id = db.Column(
         db.Integer,
-        db.ForeignKey("departments.id"),
+        db.ForeignKey("tickets_ti.departments.id"),
         index=True
     )
 
     site_id = db.Column(
         db.Integer,
-        db.ForeignKey("sites.id"),
+        db.ForeignKey("tickets_ti.sites.id"),
         index=True
     )
 

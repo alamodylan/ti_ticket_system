@@ -1,6 +1,8 @@
 from flask import (
     Flask,
-    session
+    session,
+    redirect,
+    url_for
 )
 
 from app.config.config import Config
@@ -183,5 +185,15 @@ def create_app():
     app.register_blueprint(
         site_bp
     )
+
+    # =========================
+    # ROOT REDIRECT
+    # =========================
+    @app.route("/")
+    def index():
+
+        return redirect(
+            url_for("auth.login")
+        )
 
     return app

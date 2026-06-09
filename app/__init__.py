@@ -5,6 +5,8 @@ from flask import (
     url_for
 )
 
+from sqlalchemy import event
+
 from app.config.config import Config
 
 # =========================
@@ -75,6 +77,35 @@ def create_app():
     # INIT EXTENSIONS
     # =========================
     db.init_app(app)
+
+    # =========================
+    # POSTGRESQL SCHEMA
+    # =========================
+    database_uri = app.config.get(
+        "SQLALCHEMY_DATABASE_URI",
+        ""
+    )
+
+    if "postgresql" in database_uri:
+
+        with app.app_context():
+
+            @event.listens_for(
+                db.engine,
+                "connect"
+            )
+            def set_search_path(
+                dbapi_connection,
+                connection_record
+            ):
+
+                cursor = dbapi_connection.cursor()
+
+                cursor.execute(
+                    "SET search_path TO tickets_ti"
+                )
+
+                cursor.close()
 
     migrate.init_app(
         app,

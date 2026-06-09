@@ -81,32 +81,32 @@ class Ticket(BaseModel):
     # =========================
     created_by_id = db.Column(
         db.Integer,
-        db.ForeignKey("users.id"),
+        db.ForeignKey("tickets_ti.users.id"),
         nullable=False,
         index=True
     )
 
     assigned_to_id = db.Column(
         db.Integer,
-        db.ForeignKey("users.id"),
+        db.ForeignKey("tickets_ti.users.id"),
         index=True
     )
 
     category_id = db.Column(
         db.Integer,
-        db.ForeignKey("categories.id"),
+        db.ForeignKey("tickets_ti.categories.id"),
         index=True
     )
 
     department_id = db.Column(
         db.Integer,
-        db.ForeignKey("departments.id"),
+        db.ForeignKey("tickets_ti.departments.id"),
         index=True
     )
 
     site_id = db.Column(
         db.Integer,
-        db.ForeignKey("sites.id"),
+        db.ForeignKey("tickets_ti.sites.id"),
         index=True
     )
 
@@ -242,22 +242,18 @@ class Ticket(BaseModel):
     def comments_count(self):
 
         try:
-
             return self.comments.count()
 
         except Exception:
-
             return 0
 
     @property
     def attachments_count(self):
 
         try:
-
             return self.attachments.count()
 
         except Exception:
-
             return 0
 
     def __repr__(self):

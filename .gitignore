@@ -6,9 +6,10 @@ __pycache__/
 *$py.class
 
 # =========================
-# VENV
+# VIRTUAL ENVIRONMENTS
 # =========================
 venv/
+.venv/
 env/
 ENV/
 
@@ -16,6 +17,7 @@ ENV/
 # ENV FILES
 # =========================
 .env
+.env.*
 
 # =========================
 # FLASK
@@ -24,9 +26,10 @@ instance/
 .webassets-cache
 
 # =========================
-# DATABASE
+# DATABASES
 # =========================
 *.db
+*.sqlite
 *.sqlite3
 
 # =========================
@@ -36,7 +39,7 @@ logs/
 *.log
 
 # =========================
-# IDE
+# IDE / EDITORS
 # =========================
 .vscode/
 .idea/
@@ -50,7 +53,8 @@ Thumbs.db
 # =========================
 # UPLOADS
 # =========================
-app/static/uploads/
+app/static/uploads/*
+!app/static/uploads/.gitkeep
 
 # =========================
 # MIGRATIONS CACHE
@@ -58,14 +62,14 @@ app/static/uploads/
 migrations/__pycache__/
 
 # =========================
-# TESTS
+# TESTING
 # =========================
 .pytest_cache/
 .coverage
 htmlcov/
 
 # =========================
-# NODE (PWA FUTURE)
+# NODE / PWA FUTURE
 # =========================
 node_modules/
 
@@ -73,3 +77,20 @@ node_modules/
 # DOCKER
 # =========================
 docker-data/
+
+# =========================
+# RENDER
+# =========================
+.render/
+
+# =========================
+# TEMP FILES
+# =========================
+*.tmp
+*.bak
+*.swp
+
+# =========================
+# JUPYTER
+# =========================
+.ipynb_checkpoints/

@@ -99,12 +99,24 @@ def login():
 
         except ValueError as e:
 
+            print(
+                f"LOGIN VALIDATION ERROR: {str(e)}"
+            )
+
             flash(
                 str(e),
                 "danger"
             )
 
-        except Exception:
+        except Exception as e:
+
+            print(
+                f"LOGIN ERROR: {str(e)}"
+            )
+
+            import traceback
+
+            traceback.print_exc()
 
             flash(
                 "Error inesperado al iniciar sesión.",

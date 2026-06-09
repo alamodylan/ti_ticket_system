@@ -29,7 +29,14 @@ def get_database_url():
     if database_url.startswith("postgres://"):
         database_url = database_url.replace(
             "postgres://",
+            "postgresql+pg8000://",
+            1
+        )
+
+    elif database_url.startswith("postgresql://"):
+        database_url = database_url.replace(
             "postgresql://",
+            "postgresql+pg8000://",
             1
         )
 

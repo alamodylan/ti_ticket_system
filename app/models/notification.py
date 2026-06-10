@@ -25,7 +25,7 @@ class Notification(BaseModel):
 
     user_id = db.Column(
         db.Integer,
-        db.ForeignKey("users.id"),
+        db.ForeignKey("tickets_ti.users.id"),
         nullable=False,
         index=True
     )

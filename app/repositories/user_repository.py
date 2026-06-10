@@ -35,19 +35,41 @@ class UserRepository:
     @staticmethod
     def get_by_email(email):
 
-        return (
+        if not email:
+            return None
+
+        email = (
+            email
+            .strip()
+            .lower()
+        )
+
+        user = (
             User.query
-            .filter_by(
-                email=email
+            .filter(
+                db.func.lower(
+                    User.email
+                ) == email
             )
             .first()
         )
+
+        print(
+            f"DEBUG GET_BY_EMAIL: {email} -> {user}"
+        )
+
+        return user
 
     # =========================
     # GET USER BY USERNAME
     # =========================
     @staticmethod
     def get_by_username(username):
+
+        if not username:
+            return None
+
+        username = username.strip()
 
         return (
             User.query
@@ -90,6 +112,11 @@ class UserRepository:
     # =========================
     @staticmethod
     def search(search_term):
+
+        if not search_term:
+            return []
+
+        search_term = search_term.strip()
 
         return (
             User.query

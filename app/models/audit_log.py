@@ -41,7 +41,7 @@ class AuditLog(BaseModel):
 
     user_id = db.Column(
         db.Integer,
-        db.ForeignKey("users.id"),
+        db.ForeignKey("tickets_ti.users.id"),
         nullable=True,
         index=True
     )
@@ -96,9 +96,6 @@ class AuditLog(BaseModel):
             self.action.replace("_", " ").title()
         )
 
-    # =========================
-    # REPRESENTATION
-    # =========================
     def __repr__(self):
 
         return (

@@ -24,8 +24,22 @@ class AuthService:
                 "Email y contraseña son requeridos."
             )
 
+        email = (
+            email
+            .strip()
+            .lower()
+        )
+
         user = UserRepository.get_by_email(
             email
+        )
+
+        print(
+            f"DEBUG AUTH EMAIL: {email}"
+        )
+
+        print(
+            f"DEBUG AUTH USER FOUND: {user is not None}"
         )
 
         if not user:
@@ -34,9 +48,27 @@ class AuthService:
                 "Credenciales inválidas."
             )
 
-        if not user.check_password(
+        print(
+            f"DEBUG AUTH USER ID: {user.id}"
+        )
+
+        print(
+            f"DEBUG AUTH USER ACTIVE: {user.is_active}"
+        )
+
+        print(
+            f"DEBUG AUTH HASH START: {user.password_hash[:10] if user.password_hash else 'NO_HASH'}"
+        )
+
+        password_ok = user.check_password(
             password
-        ):
+        )
+
+        print(
+            f"DEBUG AUTH PASSWORD OK: {password_ok}"
+        )
+
+        if not password_ok:
 
             raise ValueError(
                 "Credenciales inválidas."

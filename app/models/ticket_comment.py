@@ -26,14 +26,14 @@ class TicketComment(BaseModel):
     # =========================
     ticket_id = db.Column(
         db.Integer,
-        db.ForeignKey("tickets.id"),
+        db.ForeignKey("tickets_ti.tickets.id"),
         nullable=False,
         index=True
     )
 
     user_id = db.Column(
         db.Integer,
-        db.ForeignKey("users.id"),
+        db.ForeignKey("tickets_ti.users.id"),
         nullable=False,
         index=True
     )
@@ -110,9 +110,6 @@ class TicketComment(BaseModel):
             self.comment[:100] + "..."
         )
 
-    # =========================
-    # REPRESENTATION
-    # =========================
     def __repr__(self):
 
         return (

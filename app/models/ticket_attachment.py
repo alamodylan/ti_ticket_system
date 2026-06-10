@@ -37,14 +37,14 @@ class TicketAttachment(BaseModel):
     # =========================
     ticket_id = db.Column(
         db.Integer,
-        db.ForeignKey("tickets.id"),
+        db.ForeignKey("tickets_ti.tickets.id"),
         nullable=False,
         index=True
     )
 
     uploaded_by_id = db.Column(
         db.Integer,
-        db.ForeignKey("users.id"),
+        db.ForeignKey("tickets_ti.users.id"),
         index=True
     )
 

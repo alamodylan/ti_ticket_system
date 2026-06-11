@@ -18,7 +18,7 @@ def load_user(user_id):
     )
 
 
-class User(UserMixin, BaseModel):
+class User(BaseModel, UserMixin):
 
     __tablename__ = "users"
 
@@ -199,6 +199,7 @@ class User(UserMixin, BaseModel):
         permissions = self.role.permissions
 
         if hasattr(permissions, "filter_by"):
+
             return (
                 permissions
                 .filter_by(

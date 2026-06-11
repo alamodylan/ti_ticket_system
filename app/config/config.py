@@ -122,6 +122,10 @@ class Config:
         )
     )
 
+    PROCESS_INBOX_TOKEN = os.getenv(
+        "PROCESS_INBOX_TOKEN"
+    )
+
     MAX_CONTENT_LENGTH = (
         16 * 1024 * 1024
     )

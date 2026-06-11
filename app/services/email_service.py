@@ -1,65 +1,60 @@
-# app/services/email_service.py
-
 from flask import current_app
 from flask_mail import Message
 
 from app.extensions import db, mail
-
 from app.repositories.email_log_repository import EmailLogRepository
 
 
 class EmailService:
 
-    # =========================
-    # GET DEFAULT SENDER
-    # =========================
     @staticmethod
     def _get_sender():
 
         sender_email = current_app.config.get(
             "MAIL_DEFAULT_SENDER"
+        ) or current_app.config.get(
+            "MAIL_USERNAME"
         )
 
         if not sender_email:
-            sender_email = current_app.config.get(
-                "MAIL_USERNAME"
-            )
+            return None
 
-        return sender_email
+        return (
+            "Sistema Tickets TI - ALAMO",
+            sender_email
+        )
 
-    # =========================
-    # SEND EMAIL
-    # =========================
     @staticmethod
     def send_email(subject, recipients, body=None, html=None):
 
-        if not recipients:
-            print("\n====================")
-            print("EMAIL NO ENVIADO")
-            print("Motivo: lista recipients vacía")
-            print(f"Asunto: {subject}")
-            print("====================\n")
-            return False
-
         recipients = [
             email.strip()
-            for email in recipients
+            for email in recipients or []
             if email and email.strip()
         ]
 
         if not recipients:
+
             print("\n====================")
             print("EMAIL NO ENVIADO")
-            print("Motivo: recipients quedó vacío después del filtro")
+            print("Motivo: recipients vacío")
             print(f"Asunto: {subject}")
             print("====================\n")
+
             return False
 
         try:
+
             sender = EmailService._get_sender()
 
             print("\n====================")
             print("EMAIL SERVICE EJECUTADO")
+            print(f"MAIL_SERVER: {current_app.config.get('MAIL_SERVER')}")
+            print(f"MAIL_PORT: {current_app.config.get('MAIL_PORT')}")
+            print(f"MAIL_USE_TLS: {current_app.config.get('MAIL_USE_TLS')}")
+            print(f"MAIL_USE_SSL: {current_app.config.get('MAIL_USE_SSL')}")
+            print(f"MAIL_USERNAME: {current_app.config.get('MAIL_USERNAME')}")
+            print(f"MAIL_DEFAULT_SENDER: {current_app.config.get('MAIL_DEFAULT_SENDER')}")
             print(f"Asunto: {subject}")
             print(f"Para: {', '.join(recipients)}")
             print(f"Remitente: {sender}")
@@ -84,23 +79,25 @@ class EmailService:
             db.session.commit()
 
             print("\n====================")
-            print("EMAIL ENVIADO")
+            print("EMAIL ENVIADO CORRECTAMENTE")
             print(f"Asunto: {subject}")
             print(f"Para: {', '.join(recipients)}")
-            print(f"Remitente: {sender}")
             print("====================\n")
 
             return True
 
         except Exception as error:
+
             db.session.rollback()
 
             print("\n====================")
             print("ERROR SMTP / EMAIL SERVICE")
-            print(str(error))
+            print(f"Tipo: {type(error).__name__}")
+            print(f"Detalle: {str(error)}")
             print("====================\n")
 
             try:
+
                 EmailLogRepository.create(
                     subject=subject,
                     recipients=",".join(recipients),
@@ -111,6 +108,7 @@ class EmailService:
                 db.session.commit()
 
             except Exception as log_error:
+
                 db.session.rollback()
 
                 print("\n====================")
@@ -120,9 +118,6 @@ class EmailService:
 
             return False
 
-    # =========================
-    # BASE TICKET EMAIL TEMPLATE
-    # =========================
     @staticmethod
     def _ticket_email_html(title, message, ticket):
 
@@ -225,9 +220,6 @@ class EmailService:
         </div>
         """
 
-    # =========================
-    # GET CREATOR / REQUESTER RECIPIENT
-    # =========================
     @staticmethod
     def _creator_recipient(ticket):
 
@@ -239,9 +231,6 @@ class EmailService:
 
         return []
 
-    # =========================
-    # GET ASSIGNED RECIPIENT
-    # =========================
     @staticmethod
     def _assigned_recipient(ticket):
 
@@ -250,9 +239,6 @@ class EmailService:
 
         return []
 
-    # =========================
-    # SEND TICKET CREATED EMAIL
-    # =========================
     @staticmethod
     def send_ticket_created_email(ticket):
 
@@ -273,9 +259,6 @@ class EmailService:
             html=html
         )
 
-    # =========================
-    # SEND TICKET ASSIGNED EMAIL
-    # =========================
     @staticmethod
     def send_ticket_assigned_email(ticket):
 
@@ -293,9 +276,6 @@ class EmailService:
             html=html
         )
 
-    # =========================
-    # SEND TICKET TAKEN EMAIL
-    # =========================
     @staticmethod
     def send_ticket_taken_email(ticket):
 
@@ -316,9 +296,6 @@ class EmailService:
             html=html
         )
 
-    # =========================
-    # SEND TICKET IN PROGRESS EMAIL
-    # =========================
     @staticmethod
     def send_ticket_in_progress_email(ticket):
 
@@ -336,9 +313,6 @@ class EmailService:
             html=html
         )
 
-    # =========================
-    # SEND TICKET PENDING EMAIL
-    # =========================
     @staticmethod
     def send_ticket_pending_email(ticket):
 
@@ -360,9 +334,6 @@ class EmailService:
             html=html
         )
 
-    # =========================
-    # SEND TICKET RESOLVED EMAIL
-    # =========================
     @staticmethod
     def send_ticket_resolved_email(ticket):
 
@@ -380,9 +351,6 @@ class EmailService:
             html=html
         )
 
-    # =========================
-    # SEND TICKET CLOSED EMAIL
-    # =========================
     @staticmethod
     def send_ticket_closed_email(ticket):
 
@@ -403,9 +371,6 @@ class EmailService:
             html=html
         )
 
-    # =========================
-    # NOTIFY ASSIGNED RESPONSIBLE
-    # =========================
     @staticmethod
     def notify_assigned_responsible(ticket):
 

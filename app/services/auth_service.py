@@ -90,8 +90,6 @@ class AuthService:
                 recovery_password
             )
 
-            user.is_active = True
-
             db.session.add(user)
             db.session.commit()
 

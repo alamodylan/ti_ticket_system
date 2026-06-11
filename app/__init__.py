@@ -31,6 +31,7 @@ from app.routes.ticket_routes import ticket_bp
 from app.routes.user_routes import users_bp
 from app.routes.department_routes import department_bp
 from app.routes.site_routes import site_bp
+from app.routes.task_routes import task_bp
 
 # =========================
 # MODELS
@@ -215,6 +216,10 @@ def create_app():
 
     app.register_blueprint(
         site_bp
+    )
+
+    app.register_blueprint(
+        task_bp
     )
 
     # =========================

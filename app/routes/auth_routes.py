@@ -14,7 +14,9 @@ from flask_login import (
     current_user
 )
 
+from app.extensions import db
 from app.services.auth_service import AuthService
+from app.repositories.user_repository import UserRepository
 
 
 auth_bp = Blueprint(
@@ -22,6 +24,41 @@ auth_bp = Blueprint(
     __name__,
     url_prefix="/auth"
 )
+
+
+# =========================
+# TEMP RESET ADMIN PASSWORD
+# REMOVE AFTER USE
+# =========================
+@auth_bp.route(
+    "/reset-admin-password"
+)
+def reset_admin_password():
+
+    user = UserRepository.get_by_email(
+        "soporte@alamoterminales.com"
+    )
+
+    if not user:
+
+        return (
+            "Usuario administrador no encontrado.",
+            404
+        )
+
+    user.set_password(
+        "Admin12345"
+    )
+
+    user.is_active = True
+
+    db.session.add(user)
+    db.session.commit()
+
+    return (
+        "Contraseña del administrador actualizada correctamente.",
+        200
+    )
 
 
 # =========================

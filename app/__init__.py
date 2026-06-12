@@ -8,6 +8,7 @@ from flask import (
 from sqlalchemy import event
 
 from app.config.config import Config
+from tasks.inbox_scheduler import start_inbox_scheduler
 
 # =========================
 # EXTENSIONS
@@ -238,9 +239,7 @@ def create_app():
     # =========================
     if app.config.get("ENABLE_INBOX_SCHEDULER"):
 
-        try:
-
-            from app.tasks.inbox_scheduler import start_inbox_scheduler
+        try: 
 
             start_inbox_scheduler(
                 app

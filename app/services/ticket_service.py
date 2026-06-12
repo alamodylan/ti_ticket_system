@@ -68,6 +68,20 @@ class TicketService:
             raise ValueError("No se puede modificar un ticket cerrado.")
 
     @staticmethod
+    def _safe_send_email(action, send_function, ticket):
+
+        try:
+
+            send_function(ticket)
+
+        except Exception as error:
+
+            print("\n====================")
+            print(f"ERROR EMAIL {action}")
+            print(str(error))
+            print("====================\n")
+
+    @staticmethod
     def create_ticket(data):
 
         try:
@@ -368,7 +382,11 @@ class TicketService:
                 print(str(error))
                 print("====================\n")
 
-            EmailService.send_ticket_taken_email(ticket)
+            TicketService._safe_send_email(
+                "TAKE TICKET",
+                EmailService.send_ticket_taken_email,
+                ticket
+            )
 
             return {
                 "success": True
@@ -454,6 +472,12 @@ class TicketService:
                 print(str(error))
                 print("====================\n")
 
+            TicketService._safe_send_email(
+                "ASSIGN TICKET",
+                EmailService.send_ticket_assigned_email,
+                ticket
+            )
+
             return {
                 "success": True
             }
@@ -475,29 +499,59 @@ class TicketService:
     @staticmethod
     def mark_in_progress(ticket, user):
 
-        return TicketService.update_status(
+        result = TicketService.update_status(
             ticket=ticket,
             status="En Progreso",
             user=user
         )
 
+        if result["success"]:
+
+            TicketService._safe_send_email(
+                "IN PROGRESS TICKET",
+                EmailService.send_ticket_in_progress_email,
+                ticket
+            )
+
+        return result
+
     @staticmethod
     def mark_pending(ticket, user):
 
-        return TicketService.update_status(
+        result = TicketService.update_status(
             ticket=ticket,
             status="Pendiente",
             user=user
         )
 
+        if result["success"]:
+
+            TicketService._safe_send_email(
+                "PENDING TICKET",
+                EmailService.send_ticket_pending_email,
+                ticket
+            )
+
+        return result
+
     @staticmethod
     def resolve_ticket(ticket, user):
 
-        return TicketService.update_status(
+        result = TicketService.update_status(
             ticket=ticket,
             status="Resuelto",
             user=user
         )
+
+        if result["success"]:
+
+            TicketService._safe_send_email(
+                "RESOLVE TICKET",
+                EmailService.send_ticket_resolved_email,
+                ticket
+            )
+
+        return result
 
     @staticmethod
     def close_ticket(ticket, user):
@@ -533,7 +587,11 @@ class TicketService:
                 print(str(error))
                 print("====================\n")
 
-            EmailService.send_ticket_closed_email(ticket)
+            TicketService._safe_send_email(
+                "CLOSE TICKET",
+                EmailService.send_ticket_closed_email,
+                ticket
+            )
 
             return {
                 "success": True

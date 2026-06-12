@@ -140,6 +140,26 @@ class Config:
         "PROCESS_INBOX_TOKEN"
     )
 
+    # =========================
+    # INTERNAL SCHEDULER
+    # =========================
+    ENABLE_INBOX_SCHEDULER = (
+        os.getenv(
+            "ENABLE_INBOX_SCHEDULER",
+            "False"
+        ) == "True"
+    )
+
+    INBOX_SCHEDULER_INTERVAL_SECONDS = int(
+        os.getenv(
+            "INBOX_SCHEDULER_INTERVAL_SECONDS",
+            120
+        )
+    )
+
+    # =========================
+    # FILES
+    # =========================
     MAX_CONTENT_LENGTH = (
         16 * 1024 * 1024
     )
@@ -159,6 +179,9 @@ class Config:
         "tickets"
     )
 
+    # =========================
+    # SECURITY
+    # =========================
     SESSION_COOKIE_HTTPONLY = True
 
     SESSION_COOKIE_SECURE = False

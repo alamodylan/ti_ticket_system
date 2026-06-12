@@ -67,6 +67,9 @@ class Config:
         SECRET_KEY
     )
 
+    # =========================
+    # MAIL CONFIG (SALIDA)
+    # =========================
     MAIL_SERVER = os.getenv("MAIL_SERVER")
 
     MAIL_PORT = int(
@@ -89,6 +92,17 @@ class Config:
         "MAIL_DEFAULT_SENDER"
     )
 
+    MAIL_SUPPRESS_SEND = (
+        os.getenv("MAIL_SUPPRESS_SEND", "False") == "True"
+    )
+
+    MAIL_TIMEOUT = int(
+        os.getenv("MAIL_TIMEOUT", 10)
+    )
+
+    # =========================
+    # EMAIL INBOX POP3 (ENTRADA)
+    # =========================
     INBOX_POP_SERVER = os.getenv(
         "INBOX_POP_SERVER"
     )

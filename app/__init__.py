@@ -72,6 +72,7 @@ def create_app():
     print("SSL:", app.config.get("MAIL_USE_SSL"))
     print("USER:", app.config.get("MAIL_USERNAME"))
     print("SENDER:", app.config.get("MAIL_DEFAULT_SENDER"))
+    print("SUPPRESS:", app.config.get("MAIL_SUPPRESS_SEND"))
     print("====================\n")
 
     # =========================
@@ -231,5 +232,25 @@ def create_app():
         return redirect(
             url_for("auth.login")
         )
+
+    # =========================
+    # INTERNAL INBOX SCHEDULER
+    # =========================
+    if app.config.get("ENABLE_INBOX_SCHEDULER"):
+
+        try:
+
+            from app.tasks.inbox_scheduler import start_inbox_scheduler
+
+            start_inbox_scheduler(
+                app
+            )
+
+        except Exception as error:
+
+            print("\n====================")
+            print("ERROR STARTING INBOX SCHEDULER")
+            print(str(error))
+            print("====================\n")
 
     return app

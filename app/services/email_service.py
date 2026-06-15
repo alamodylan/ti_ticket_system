@@ -1,29 +1,32 @@
-from flask import current_app
-from flask_mail import Message
+import smtplib
+import ssl
 
-from app.extensions import db, mail
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.utils import formataddr
+
+from flask import current_app
+
+from app.extensions import db
 from app.repositories.email_log_repository import EmailLogRepository
 
 
 class EmailService:
 
+    # =========================
+    # GET DEFAULT SENDER
+    # =========================
     @staticmethod
-    def _get_sender():
-
-        sender_email = current_app.config.get(
-            "MAIL_DEFAULT_SENDER"
-        ) or current_app.config.get(
-            "MAIL_USERNAME"
-        )
-
-        if not sender_email:
-            return None
+    def _get_sender_email():
 
         return (
-            "Sistema Tickets TI - ALAMO",
-            sender_email
+            current_app.config.get("MAIL_DEFAULT_SENDER")
+            or current_app.config.get("MAIL_USERNAME")
         )
 
+    # =========================
+    # SEND EMAIL
+    # =========================
     @staticmethod
     def send_email(subject, recipients, body=None, html=None):
 
@@ -43,32 +46,179 @@ class EmailService:
 
             return False
 
-        try:
+        mail_server = current_app.config.get("MAIL_SERVER")
+        mail_port = int(current_app.config.get("MAIL_PORT", 587))
+        mail_use_tls = current_app.config.get("MAIL_USE_TLS", True)
+        mail_use_ssl = current_app.config.get("MAIL_USE_SSL", False)
+        mail_username = current_app.config.get("MAIL_USERNAME")
+        mail_password = current_app.config.get("MAIL_PASSWORD")
+        mail_suppress_send = current_app.config.get("MAIL_SUPPRESS_SEND", False)
+        mail_timeout = int(current_app.config.get("MAIL_TIMEOUT", 10))
 
-            sender = EmailService._get_sender()
+        sender_email = EmailService._get_sender_email()
+
+        print("\n====================")
+        print("EMAIL SERVICE EJECUTADO")
+        print(f"MAIL_SERVER: {mail_server}")
+        print(f"MAIL_PORT: {mail_port}")
+        print(f"MAIL_USE_TLS: {mail_use_tls}")
+        print(f"MAIL_USE_SSL: {mail_use_ssl}")
+        print(f"MAIL_USERNAME: {mail_username}")
+        print(f"MAIL_DEFAULT_SENDER: {sender_email}")
+        print(f"MAIL_SUPPRESS_SEND: {mail_suppress_send}")
+        print(f"MAIL_TIMEOUT: {mail_timeout}")
+        print(f"Asunto: {subject}")
+        print(f"Para: {', '.join(recipients)}")
+        print("====================\n")
+
+        if mail_suppress_send:
 
             print("\n====================")
-            print("EMAIL SERVICE EJECUTADO")
-            print(f"MAIL_SERVER: {current_app.config.get('MAIL_SERVER')}")
-            print(f"MAIL_PORT: {current_app.config.get('MAIL_PORT')}")
-            print(f"MAIL_USE_TLS: {current_app.config.get('MAIL_USE_TLS')}")
-            print(f"MAIL_USE_SSL: {current_app.config.get('MAIL_USE_SSL')}")
-            print(f"MAIL_USERNAME: {current_app.config.get('MAIL_USERNAME')}")
-            print(f"MAIL_DEFAULT_SENDER: {current_app.config.get('MAIL_DEFAULT_SENDER')}")
+            print("EMAIL SUPRIMIDO")
+            print("Motivo: MAIL_SUPPRESS_SEND=True")
             print(f"Asunto: {subject}")
             print(f"Para: {', '.join(recipients)}")
-            print(f"Remitente: {sender}")
             print("====================\n")
 
-            msg = Message(
-                subject=subject,
-                recipients=recipients,
-                body=body,
-                html=html,
-                sender=sender
+            try:
+
+                EmailLogRepository.create(
+                    subject=subject,
+                    recipients=",".join(recipients),
+                    status="suppressed",
+                    error_message="MAIL_SUPPRESS_SEND=True"
+                )
+
+                db.session.commit()
+
+            except Exception as log_error:
+
+                db.session.rollback()
+
+                print("\n====================")
+                print("ERROR GUARDANDO EMAIL LOG SUPPRESSED")
+                print(str(log_error))
+                print("====================\n")
+
+            return False
+
+        if not mail_server or not sender_email:
+
+            error_message = (
+                "Configuración SMTP incompleta: "
+                "MAIL_SERVER o MAIL_DEFAULT_SENDER/MAIL_USERNAME vacío."
             )
 
-            mail.send(msg)
+            print("\n====================")
+            print("ERROR SMTP / EMAIL SERVICE")
+            print(error_message)
+            print("====================\n")
+
+            try:
+
+                EmailLogRepository.create(
+                    subject=subject,
+                    recipients=",".join(recipients),
+                    status="failed",
+                    error_message=error_message
+                )
+
+                db.session.commit()
+
+            except Exception:
+
+                db.session.rollback()
+
+            return False
+
+        try:
+
+            message = MIMEMultipart("alternative")
+
+            message["Subject"] = subject
+            message["From"] = formataddr(
+                (
+                    "Sistema Tickets TI - ALAMO",
+                    sender_email
+                )
+            )
+            message["To"] = ", ".join(recipients)
+
+            if body:
+
+                message.attach(
+                    MIMEText(
+                        body,
+                        "plain",
+                        "utf-8"
+                    )
+                )
+
+            if html:
+
+                message.attach(
+                    MIMEText(
+                        html,
+                        "html",
+                        "utf-8"
+                    )
+                )
+
+            if not body and not html:
+
+                message.attach(
+                    MIMEText(
+                        "",
+                        "plain",
+                        "utf-8"
+                    )
+                )
+
+            if mail_use_ssl:
+
+                context = ssl.create_default_context()
+
+                smtp = smtplib.SMTP_SSL(
+                    mail_server,
+                    mail_port,
+                    timeout=mail_timeout,
+                    context=context
+                )
+
+            else:
+
+                smtp = smtplib.SMTP(
+                    mail_server,
+                    mail_port,
+                    timeout=mail_timeout
+                )
+
+            with smtp:
+
+                smtp.ehlo()
+
+                if mail_use_tls and not mail_use_ssl:
+
+                    context = ssl.create_default_context()
+
+                    smtp.starttls(
+                        context=context
+                    )
+
+                    smtp.ehlo()
+
+                if mail_username and mail_password:
+
+                    smtp.login(
+                        mail_username,
+                        mail_password
+                    )
+
+                smtp.sendmail(
+                    sender_email,
+                    recipients,
+                    message.as_string()
+                )
 
             EmailLogRepository.create(
                 subject=subject,
@@ -102,7 +252,9 @@ class EmailService:
                     subject=subject,
                     recipients=",".join(recipients),
                     status="failed",
-                    error_message=str(error)
+                    error_message=(
+                        f"{type(error).__name__}: {str(error)}"
+                    )
                 )
 
                 db.session.commit()
@@ -118,6 +270,9 @@ class EmailService:
 
             return False
 
+    # =========================
+    # BASE TICKET EMAIL TEMPLATE
+    # =========================
     @staticmethod
     def _ticket_email_html(title, message, ticket):
 
@@ -220,6 +375,9 @@ class EmailService:
         </div>
         """
 
+    # =========================
+    # GET CREATOR / REQUESTER RECIPIENT
+    # =========================
     @staticmethod
     def _creator_recipient(ticket):
 
@@ -231,6 +389,9 @@ class EmailService:
 
         return []
 
+    # =========================
+    # GET ASSIGNED RECIPIENT
+    # =========================
     @staticmethod
     def _assigned_recipient(ticket):
 
@@ -239,6 +400,9 @@ class EmailService:
 
         return []
 
+    # =========================
+    # SEND TICKET CREATED EMAIL
+    # =========================
     @staticmethod
     def send_ticket_created_email(ticket):
 
@@ -259,6 +423,9 @@ class EmailService:
             html=html
         )
 
+    # =========================
+    # SEND TICKET ASSIGNED EMAIL
+    # =========================
     @staticmethod
     def send_ticket_assigned_email(ticket):
 
@@ -276,6 +443,9 @@ class EmailService:
             html=html
         )
 
+    # =========================
+    # SEND TICKET TAKEN EMAIL
+    # =========================
     @staticmethod
     def send_ticket_taken_email(ticket):
 
@@ -296,6 +466,9 @@ class EmailService:
             html=html
         )
 
+    # =========================
+    # SEND TICKET IN PROGRESS EMAIL
+    # =========================
     @staticmethod
     def send_ticket_in_progress_email(ticket):
 
@@ -313,6 +486,9 @@ class EmailService:
             html=html
         )
 
+    # =========================
+    # SEND TICKET PENDING EMAIL
+    # =========================
     @staticmethod
     def send_ticket_pending_email(ticket):
 
@@ -334,6 +510,9 @@ class EmailService:
             html=html
         )
 
+    # =========================
+    # SEND TICKET RESOLVED EMAIL
+    # =========================
     @staticmethod
     def send_ticket_resolved_email(ticket):
 
@@ -351,6 +530,9 @@ class EmailService:
             html=html
         )
 
+    # =========================
+    # SEND TICKET CLOSED EMAIL
+    # =========================
     @staticmethod
     def send_ticket_closed_email(ticket):
 
@@ -371,6 +553,9 @@ class EmailService:
             html=html
         )
 
+    # =========================
+    # NOTIFY ASSIGNED RESPONSIBLE
+    # =========================
     @staticmethod
     def notify_assigned_responsible(ticket):
 

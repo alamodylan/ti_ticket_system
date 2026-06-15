@@ -7,6 +7,20 @@ from app.models.ticket import Ticket
 class TicketRepository:
 
     # =========================
+    # NORMALIZE SITE ID
+    # =========================
+    @staticmethod
+    def _normalize_site_id(site_id):
+
+        if site_id in [None, "", "None"]:
+            return None
+
+        try:
+            return int(site_id)
+        except Exception:
+            return None
+
+    # =========================
     # CREATE TICKET
     # =========================
     @staticmethod
@@ -37,7 +51,6 @@ class TicketRepository:
         query = Ticket.query
 
         if user and not user.is_admin:
-
             query = query.filter(
                 or_(
                     Ticket.created_by_id == user.id,
@@ -47,9 +60,7 @@ class TicketRepository:
 
         return (
             query
-            .order_by(
-                Ticket.created_at.desc()
-            )
+            .order_by(Ticket.created_at.desc())
             .all()
         )
 
@@ -71,13 +82,11 @@ class TicketRepository:
             return ticket
 
         if user:
-
             if (
                 ticket.created_by_id == user.id
                 or ticket.assigned_to_id == user.id
             ):
                 return ticket
-
             return None
 
         return ticket
@@ -90,9 +99,7 @@ class TicketRepository:
 
         return (
             Ticket.query
-            .filter_by(
-                ticket_number=ticket_number
-            )
+            .filter_by(ticket_number=ticket_number)
             .first()
         )
 
@@ -107,9 +114,7 @@ class TicketRepository:
 
         return (
             Ticket.query
-            .filter_by(
-                email_message_id=email_message_id
-            )
+            .filter_by(email_message_id=email_message_id)
             .first()
         )
 
@@ -148,10 +153,13 @@ class TicketRepository:
         site_id=None
     ):
 
+        site_id = TicketRepository._normalize_site_id(
+            site_id
+        )
+
         query = Ticket.query
 
         if not user.is_admin:
-
             query = query.filter(
                 or_(
                     Ticket.created_by_id == user.id,
@@ -159,51 +167,35 @@ class TicketRepository:
                 )
             )
 
-        if user.is_admin and site_id:
-
+        if user.is_admin and site_id is not None:
             query = query.filter(
                 Ticket.site_id == site_id
             )
 
         if search:
-
             query = query.filter(
                 or_(
-                    Ticket.ticket_number.ilike(
-                        f"%{search}%"
-                    ),
-                    Ticket.title.ilike(
-                        f"%{search}%"
-                    ),
-                    Ticket.description.ilike(
-                        f"%{search}%"
-                    ),
-                    Ticket.requester_name.ilike(
-                        f"%{search}%"
-                    ),
-                    Ticket.requester_email.ilike(
-                        f"%{search}%"
-                    )
+                    Ticket.ticket_number.ilike(f"%{search}%"),
+                    Ticket.title.ilike(f"%{search}%"),
+                    Ticket.description.ilike(f"%{search}%"),
+                    Ticket.requester_name.ilike(f"%{search}%"),
+                    Ticket.requester_email.ilike(f"%{search}%")
                 )
             )
 
         if status:
-
             query = query.filter(
                 Ticket.status == status
             )
 
         if priority:
-
             query = query.filter(
                 Ticket.priority == priority
             )
 
         return (
             query
-            .order_by(
-                Ticket.created_at.desc()
-            )
+            .order_by(Ticket.created_at.desc())
             .all()
         )
 
@@ -217,10 +209,13 @@ class TicketRepository:
         site_id=None
     ):
 
+        site_id = TicketRepository._normalize_site_id(
+            site_id
+        )
+
         query = Ticket.query
 
         if not user.is_admin:
-
             query = query.filter(
                 or_(
                     Ticket.created_by_id == user.id,
@@ -228,17 +223,14 @@ class TicketRepository:
                 )
             )
 
-        if user.is_admin and site_id:
-
+        if user.is_admin and site_id is not None:
             query = query.filter(
                 Ticket.site_id == site_id
             )
 
         return (
             query
-            .order_by(
-                Ticket.created_at.desc()
-            )
+            .order_by(Ticket.created_at.desc())
             .limit(limit)
             .all()
         )
@@ -257,8 +249,6 @@ class TicketRepository:
                     Ticket.assigned_to_id == user_id
                 )
             )
-            .order_by(
-                Ticket.created_at.desc()
-            )
+            .order_by(Ticket.created_at.desc())
             .all()
         )

@@ -32,6 +32,18 @@ def index():
         "selected_site_id"
     )
 
+    if selected_site_id:
+
+        try:
+
+            selected_site_id = int(
+                selected_site_id
+            )
+
+        except Exception:
+
+            selected_site_id = None
+
     stats = DashboardService.get_dashboard_stats(
         user=current_user,
         site_id=selected_site_id

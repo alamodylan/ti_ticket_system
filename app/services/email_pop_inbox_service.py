@@ -369,7 +369,13 @@ class EmailPopInboxService:
                             )
                             continue
 
-                        EmailService.send_email(
+                        print("================================")
+                        print("INTENTANDO ENVIAR CORREO AUTOMATICO")
+                        print(f"DESTINO: {from_email}")
+                        print(f"TICKET: {ticket.ticket_number}")
+                        print("================================")
+
+                        email_result = EmailService.send_email(
                             subject=f"Solicitud registrada - {ticket.ticket_number}",
                             recipients=[from_email],
                             html=f"""
@@ -398,6 +404,10 @@ class EmailPopInboxService:
                             </div>
                             """
                         )
+
+                        print("================================")
+                        print(f"RESULTADO ENVIO EMAIL: {email_result}")
+                        print("================================")
 
                         created_count += 1
 

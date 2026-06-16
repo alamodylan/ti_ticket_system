@@ -121,8 +121,8 @@ class EmailService:
             message["Subject"] = subject
             message["From"] = formataddr(
                 (
-                    "Sistema Tickets TI - ALAMO",
-                    sender_email
+                    "Soporte Álamo",
+                    "soporte@alamoterminales.com"
                 )
             )
             message["To"] = ", ".join(recipients)

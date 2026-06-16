@@ -369,45 +369,59 @@ class EmailPopInboxService:
                             )
                             continue
 
-                        print("================================")
-                        print("INTENTANDO ENVIAR CORREO AUTOMATICO")
-                        print(f"DESTINO: {from_email}")
-                        print(f"TICKET: {ticket.ticket_number}")
-                        print("================================")
+                        try:
 
-                        email_result = EmailService.send_email(
-                            subject=f"Solicitud registrada - {ticket.ticket_number}",
-                            recipients=[from_email],
-                            html=f"""
-                            <div style="font-family: Arial, sans-serif; color: #222;">
-                                <h2>Solicitud registrada correctamente</h2>
+                            print("================================")
+                            print("INTENTANDO ENVIAR CORREO AUTOMATICO")
+                            print(f"DESTINO: {from_email}")
+                            print(f"TICKET: {ticket.ticket_number}")
+                            print("================================")
 
-                                <p>
-                                    Hemos recibido su solicitud de soporte.
-                                </p>
+                            email_result = EmailService.send_email(
+                                subject=f"Solicitud registrada - {ticket.ticket_number}",
+                                recipients=[from_email],
+                                html=f"""
+                                <div style="font-family: Arial, sans-serif; color: #222;">
+                                    <h2>Solicitud registrada correctamente</h2>
 
-                                <p>
-                                    <strong>Número de ticket:</strong><br>
-                                    {ticket.ticket_number}
-                                </p>
+                                    <p>
+                                        Hemos recibido su solicitud de soporte.
+                                    </p>
 
-                                <p>
-                                    <strong>Asunto:</strong><br>
-                                    {ticket.title}
-                                </p>
+                                    <p>
+                                        <strong>Número de ticket:</strong><br>
+                                        {ticket.ticket_number}
+                                    </p>
 
-                                <hr>
+                                    <p>
+                                        <strong>Asunto:</strong><br>
+                                        {ticket.title}
+                                    </p>
 
-                                <p style="font-size: 12px; color: #666;">
-                                    Este correo fue generado automáticamente por el Sistema Tickets TI - ALAMO.
-                                </p>
-                            </div>
-                            """
-                        )
+                                    <hr>
 
-                        print("================================")
-                        print(f"RESULTADO ENVIO EMAIL: {email_result}")
-                        print("================================")
+                                    <p style="font-size: 12px; color: #666;">
+                                        Este correo fue generado automáticamente por el Sistema Tickets TI - ALAMO.
+                                    </p>
+                                </div>
+                                """
+                            )
+
+                            print("================================")
+                            print(f"RESULTADO ENVIO EMAIL: {email_result}")
+                            print("================================")
+
+                        except Exception as email_error:
+
+                            print("================================")
+                            print("ERROR ENVIANDO CORREO AUTOMATICO")
+                            print(type(email_error).__name__)
+                            print(str(email_error))
+                            print("================================")
+
+                            errors.append(
+                                f"EMAIL ERROR: {type(email_error).__name__}: {str(email_error)}"
+                            )
 
                         created_count += 1
 
@@ -419,8 +433,14 @@ class EmailPopInboxService:
 
                 except Exception as error:
 
+                    print("================================")
+                    print("ERROR PROCESANDO CORREO POP")
+                    print(type(error).__name__)
+                    print(str(error))
+                    print("================================")
+
                     errors.append(
-                        str(error)
+                        f"{type(error).__name__}: {str(error)}"
                     )
 
             mailbox.quit()
@@ -433,6 +453,12 @@ class EmailPopInboxService:
             }
 
         except Exception as error:
+
+            print("================================")
+            print("ERROR GENERAL POP INBOX")
+            print(type(error).__name__)
+            print(str(error))
+            print("================================")
 
             return {
                 "success": False,

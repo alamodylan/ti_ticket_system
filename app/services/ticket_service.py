@@ -159,6 +159,14 @@ class TicketService:
                 print(str(error))
                 print("====================\n")
 
+            if ticket.source == "email":
+
+                TicketService._safe_send_email(
+                    "CREATE TICKET FROM EMAIL",
+                    EmailService.send_ticket_created_email,
+                    ticket
+                )
+
             if ticket.assigned_to_id:
 
                 try:

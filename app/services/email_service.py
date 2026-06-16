@@ -30,6 +30,8 @@ class EmailService:
     @staticmethod
     def send_email(subject, recipients, body=None, html=None):
 
+        import socket
+
         recipients = [
             email.strip()
             for email in recipients or []
@@ -53,7 +55,7 @@ class EmailService:
         mail_username = current_app.config.get("MAIL_USERNAME")
         mail_password = current_app.config.get("MAIL_PASSWORD")
         mail_suppress_send = current_app.config.get("MAIL_SUPPRESS_SEND", False)
-        mail_timeout = int(current_app.config.get("MAIL_TIMEOUT", 10))
+        mail_timeout = int(current_app.config.get("MAIL_TIMEOUT", 20))
 
         sender_email = EmailService._get_sender_email()
 
@@ -76,60 +78,41 @@ class EmailService:
             print("\n====================")
             print("EMAIL SUPRIMIDO")
             print("Motivo: MAIL_SUPPRESS_SEND=True")
-            print(f"Asunto: {subject}")
-            print(f"Para: {', '.join(recipients)}")
             print("====================\n")
-
-            try:
-
-                EmailLogRepository.create(
-                    subject=subject,
-                    recipients=",".join(recipients),
-                    status="suppressed",
-                    error_message="MAIL_SUPPRESS_SEND=True"
-                )
-
-                db.session.commit()
-
-            except Exception as log_error:
-
-                db.session.rollback()
-
-                print("\n====================")
-                print("ERROR GUARDANDO EMAIL LOG SUPPRESSED")
-                print(str(log_error))
-                print("====================\n")
 
             return False
 
         if not mail_server or not sender_email:
 
-            error_message = (
-                "Configuración SMTP incompleta: "
-                "MAIL_SERVER o MAIL_DEFAULT_SENDER/MAIL_USERNAME vacío."
-            )
-
             print("\n====================")
             print("ERROR SMTP / EMAIL SERVICE")
-            print(error_message)
+            print("Configuración SMTP incompleta.")
             print("====================\n")
 
-            try:
-
-                EmailLogRepository.create(
-                    subject=subject,
-                    recipients=",".join(recipients),
-                    status="failed",
-                    error_message=error_message
-                )
-
-                db.session.commit()
-
-            except Exception:
-
-                db.session.rollback()
-
             return False
+
+        try:
+
+            print("\n====================")
+            print("TEST CONEXION SMTP")
+            print(f"HOST: {mail_server}")
+            print(f"PORT: {mail_port}")
+
+            socket.create_connection(
+                (mail_server, mail_port),
+                timeout=10
+            ).close()
+
+            print("SMTP CONECTA")
+            print("====================\n")
+
+        except Exception as socket_error:
+
+            print("\n====================")
+            print("SMTP NO CONECTA")
+            print(type(socket_error).__name__)
+            print(str(socket_error))
+            print("====================\n")
 
         try:
 

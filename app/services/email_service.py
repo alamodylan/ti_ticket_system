@@ -236,7 +236,11 @@ class EmailService:
                     recipients=",".join(recipients),
                     status="failed",
                     error_message=(
-                        f"{type(error).__name__}: {str(error)}"
+                        f"{type(error).__name__}: {str(error)} | "
+                        f"server={mail_server} "
+                        f"port={mail_port} "
+                        f"tls={mail_use_tls} "
+                        f"ssl={mail_use_ssl}"
                     )
                 )
 

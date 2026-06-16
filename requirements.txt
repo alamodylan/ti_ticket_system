@@ -99,3 +99,4 @@ Flask-Compress==1.17
 # EMAIL INBOX PROCESSING
 # =========================
 beautifulsoup4==4.13.4
+resend

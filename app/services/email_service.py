@@ -24,13 +24,10 @@ class EmailService:
             or current_app.config.get("MAIL_USERNAME")
         )
 
-    # =========================
-    # SEND EMAIL
-    # =========================
     @staticmethod
     def send_email(subject, recipients, body=None, html=None):
 
-        import socket
+        import requests
 
         recipients = [
             email.strip()
@@ -48,6 +45,11 @@ class EmailService:
 
             return False
 
+        email_provider = (
+            current_app.config.get("EMAIL_PROVIDER", "smtp")
+            or "smtp"
+        ).lower()
+
         mail_server = current_app.config.get("MAIL_SERVER")
         mail_port = int(current_app.config.get("MAIL_PORT", 587))
         mail_use_tls = current_app.config.get("MAIL_USE_TLS", True)
@@ -59,8 +61,15 @@ class EmailService:
 
         sender_email = EmailService._get_sender_email()
 
+        resend_api_key = current_app.config.get("RESEND_API_KEY")
+        resend_from = current_app.config.get(
+            "RESEND_FROM",
+            "Soporte Álamo <onboarding@resend.dev>"
+        )
+
         print("\n====================")
         print("EMAIL SERVICE EJECUTADO")
+        print(f"EMAIL_PROVIDER: {email_provider}")
         print(f"MAIL_SERVER: {mail_server}")
         print(f"MAIL_PORT: {mail_port}")
         print(f"MAIL_USE_TLS: {mail_use_tls}")
@@ -69,6 +78,7 @@ class EmailService:
         print(f"MAIL_DEFAULT_SENDER: {sender_email}")
         print(f"MAIL_SUPPRESS_SEND: {mail_suppress_send}")
         print(f"MAIL_TIMEOUT: {mail_timeout}")
+        print(f"RESEND_FROM: {resend_from}")
         print(f"Asunto: {subject}")
         print(f"Para: {', '.join(recipients)}")
         print("====================\n")
@@ -80,39 +90,200 @@ class EmailService:
             print("Motivo: MAIL_SUPPRESS_SEND=True")
             print("====================\n")
 
+            try:
+
+                EmailLogRepository.create(
+                    subject=subject,
+                    recipients=",".join(recipients),
+                    status="suppressed",
+                    error_message="MAIL_SUPPRESS_SEND=True"
+                )
+
+                db.session.commit()
+
+            except Exception as log_error:
+
+                db.session.rollback()
+
+                print("\n====================")
+                print("ERROR GUARDANDO EMAIL LOG SUPPRESSED")
+                print(str(log_error))
+                print("====================\n")
+
             return False
+
+        if email_provider == "resend":
+
+            if not resend_api_key:
+
+                error_message = "RESEND_API_KEY no configurado."
+
+                print("\n====================")
+                print("ERROR RESEND / EMAIL SERVICE")
+                print(error_message)
+                print("====================\n")
+
+                try:
+
+                    EmailLogRepository.create(
+                        subject=subject,
+                        recipients=",".join(recipients),
+                        status="failed",
+                        error_message=error_message
+                    )
+
+                    db.session.commit()
+
+                except Exception as log_error:
+
+                    db.session.rollback()
+
+                    print("\n====================")
+                    print("ERROR GUARDANDO EMAIL LOG RESEND CONFIG")
+                    print(str(log_error))
+                    print("====================\n")
+
+                return False
+
+            try:
+
+                payload = {
+                    "from": resend_from,
+                    "to": recipients,
+                    "subject": subject,
+                }
+
+                if html:
+
+                    payload["html"] = html
+
+                elif body:
+
+                    payload["text"] = body
+
+                else:
+
+                    payload["text"] = ""
+
+                response = requests.post(
+                    "https://api.resend.com/emails",
+                    headers={
+                        "Authorization": f"Bearer {resend_api_key}",
+                        "Content-Type": "application/json"
+                    },
+                    json=payload,
+                    timeout=30
+                )
+
+                if response.status_code not in [200, 201, 202]:
+
+                    error_message = (
+                        f"ResendError: status={response.status_code} "
+                        f"response={response.text}"
+                    )
+
+                    print("\n====================")
+                    print("ERROR RESEND / EMAIL SERVICE")
+                    print(error_message)
+                    print("====================\n")
+
+                    EmailLogRepository.create(
+                        subject=subject,
+                        recipients=",".join(recipients),
+                        status="failed",
+                        error_message=error_message
+                    )
+
+                    db.session.commit()
+
+                    return False
+
+                EmailLogRepository.create(
+                    subject=subject,
+                    recipients=",".join(recipients),
+                    status="sent",
+                    error_message=f"provider=resend response={response.text}"
+                )
+
+                db.session.commit()
+
+                print("\n====================")
+                print("EMAIL ENVIADO CORRECTAMENTE POR RESEND")
+                print(f"Asunto: {subject}")
+                print(f"Para: {', '.join(recipients)}")
+                print("====================\n")
+
+                return True
+
+            except Exception as error:
+
+                db.session.rollback()
+
+                error_message = (
+                    f"{type(error).__name__}: {str(error)} | "
+                    f"provider=resend"
+                )
+
+                print("\n====================")
+                print("ERROR RESEND / EMAIL SERVICE")
+                print(error_message)
+                print("====================\n")
+
+                try:
+
+                    EmailLogRepository.create(
+                        subject=subject,
+                        recipients=",".join(recipients),
+                        status="failed",
+                        error_message=error_message
+                    )
+
+                    db.session.commit()
+
+                except Exception as log_error:
+
+                    db.session.rollback()
+
+                    print("\n====================")
+                    print("ERROR GUARDANDO EMAIL LOG RESEND")
+                    print(str(log_error))
+                    print("====================\n")
+
+                return False
 
         if not mail_server or not sender_email:
 
+            error_message = (
+                "Configuración SMTP incompleta: "
+                "MAIL_SERVER o MAIL_DEFAULT_SENDER/MAIL_USERNAME vacío."
+            )
+
             print("\n====================")
             print("ERROR SMTP / EMAIL SERVICE")
-            print("Configuración SMTP incompleta.")
+            print(error_message)
             print("====================\n")
+
+            try:
+
+                EmailLogRepository.create(
+                    subject=subject,
+                    recipients=",".join(recipients),
+                    status="failed",
+                    error_message=error_message
+                )
+
+                db.session.commit()
+
+            except Exception as log_error:
+
+                db.session.rollback()
+
+                print("\n====================")
+                print("ERROR GUARDANDO EMAIL LOG SMTP CONFIG")
+                print(str(log_error))
+                print("====================\n")
 
             return False
-
-        try:
-
-            print("\n====================")
-            print("TEST CONEXION SMTP")
-            print(f"HOST: {mail_server}")
-            print(f"PORT: {mail_port}")
-
-            socket.create_connection(
-                (mail_server, mail_port),
-                timeout=10
-            ).close()
-
-            print("SMTP CONECTA")
-            print("====================\n")
-
-        except Exception as socket_error:
-
-            print("\n====================")
-            print("SMTP NO CONECTA")
-            print(type(socket_error).__name__)
-            print(str(socket_error))
-            print("====================\n")
 
         try:
 
@@ -122,7 +293,7 @@ class EmailService:
             message["From"] = formataddr(
                 (
                     "Soporte Álamo",
-                    "soporte@alamoterminales.com"
+                    sender_email
                 )
             )
             message["To"] = ", ".join(recipients)
@@ -212,7 +383,7 @@ class EmailService:
             db.session.commit()
 
             print("\n====================")
-            print("EMAIL ENVIADO CORRECTAMENTE")
+            print("EMAIL ENVIADO CORRECTAMENTE POR SMTP")
             print(f"Asunto: {subject}")
             print(f"Para: {', '.join(recipients)}")
             print("====================\n")
@@ -223,10 +394,17 @@ class EmailService:
 
             db.session.rollback()
 
+            error_message = (
+                f"{type(error).__name__}: {str(error)} | "
+                f"server={mail_server} "
+                f"port={mail_port} "
+                f"tls={mail_use_tls} "
+                f"ssl={mail_use_ssl}"
+            )
+
             print("\n====================")
             print("ERROR SMTP / EMAIL SERVICE")
-            print(f"Tipo: {type(error).__name__}")
-            print(f"Detalle: {str(error)}")
+            print(error_message)
             print("====================\n")
 
             try:
@@ -235,13 +413,7 @@ class EmailService:
                     subject=subject,
                     recipients=",".join(recipients),
                     status="failed",
-                    error_message=(
-                        f"{type(error).__name__}: {str(error)} | "
-                        f"server={mail_server} "
-                        f"port={mail_port} "
-                        f"tls={mail_use_tls} "
-                        f"ssl={mail_use_ssl}"
-                    )
+                    error_message=error_message
                 )
 
                 db.session.commit()
@@ -251,7 +423,7 @@ class EmailService:
                 db.session.rollback()
 
                 print("\n====================")
-                print("ERROR GUARDANDO EMAIL LOG")
+                print("ERROR GUARDANDO EMAIL LOG SMTP")
                 print(str(log_error))
                 print("====================\n")
 

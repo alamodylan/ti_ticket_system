@@ -101,6 +101,23 @@ class Config:
     )
 
     # =========================
+    # EMAIL API PROVIDER
+    # =========================
+    EMAIL_PROVIDER = os.getenv(
+        "EMAIL_PROVIDER",
+        "smtp"
+    )
+
+    RESEND_API_KEY = os.getenv(
+        "RESEND_API_KEY"
+    )
+
+    RESEND_FROM = os.getenv(
+        "RESEND_FROM",
+        "Soporte Álamo <onboarding@resend.dev>"
+    )
+
+    # =========================
     # EMAIL INBOX POP3 (ENTRADA)
     # =========================
     INBOX_POP_SERVER = os.getenv(
